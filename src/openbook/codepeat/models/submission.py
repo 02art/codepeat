@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from openbook_auth.models import User
+from openbook.auth.models import User
 from openbook.core.models import UUIDMixin, CreatedModifiedByMixin
 from .challenge import Challenge
 
