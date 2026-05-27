@@ -22,11 +22,117 @@ build and run the source code. Alternatively, use the provided dev container
 configuration, if you have Docker or Podman installed but cannot or don't want
 to install additional packages (see next section).
 
-- Python
-- Poetry package manager
-- Node.js and npm (workspace builds)
-- Redis for local integrated runs
-- Java for OpenAPI generator tooling
+.. list-table::
+    :width: 100%
+    :header-rows: 1
+
+    * - Tool
+      - Needed for
+    * - Python
+      - Running the Django backend and management commands
+    * - Poetry
+      - Managing Python dependencies and virtual environments
+    * - Node.js and npm
+      - Workspace orchestration and building frontend assets
+    * - Redis
+      - Task queue and worker communication
+    * - Java Runtime
+      - OpenAPI generator tooling
+    * - Graphviz
+      - Rendering diagrams in the manual
+
+To get from a fresh machine to a working OpenBook setup, use this short workflow.
+First you need to install the required tools:
+
+.. tabs::
+
+   .. tab:: Windows
+
+      Download and install these tools from their official pages:
+
+      - `Python <https://www.python.org/downloads/>`_
+      - `Node.js (LTS) <https://nodejs.org/en/download>`_
+      - `Redis (unofficial Windows port) <https://github.com/redis-windows/redis-windows/releases>`_
+      - `Graphviz <https://graphviz.org/download/>`_
+
+      Use the **Python**, **Node.js** and **Graphviz** installers and keep default settings.
+      When installing Python and Graphviz, enable the option to add each to the :envvar:`PATH`
+      environment variable.
+
+      Install **Poetry** in PowerShell:
+
+      .. code-block:: powershell
+
+         (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+
+      Next, add Python's scripts directory to the system :envvar:`PATH` (typically ``%APPDATA%\Python\Scripts``)
+      so you can run :command:`poetry` from any directory:
+
+      1. Open the Start menu and search for ``Edit environment variable``.
+      2. In the *System variables* section, select ``Path`` and click *Edit*.
+      3. Click *New* and add ``%APPDATA%\Python\Scripts``.
+      4. Confirm all dialogs with *OK*, then open a new PowerShell window.
+      5. Verify the setup with :command:`poetry --version`.
+
+      **Redis** has no official open-source Windows port, but an unofficial port is available.
+      Download the ZIP file from the GitHub release page and extract it, for example, to :file:`C:\Program Files\Redis`.
+      Add this directory to the system :envvar:`PATH` variable as described above.
+
+      **Java** can be installed using the Windows Package Manager. First, search for the most recent version
+      of Microsoft OpenJDK:
+
+      .. code-block:: powershell
+
+         winget search Microsoft.OpenJDK
+
+      Then install the latest version (25 in this example), e.g.:
+
+      .. code-block:: powershell
+
+         winget install Microsoft.OpenJDK.25
+
+   .. tab:: macOS
+
+      macOS requires Homebrew for Redis, which has no official native macOS installer.
+      Thus the simplest option is to install the other tools with Homebrew, too.
+
+      .. code-block:: bash
+
+         brew install python@3.12 poetry node redis openjdk@21 graphviz
+         brew services start redis
+
+      If you don't have Homebrew installed, visit `brew.sh <https://brew.sh>`_ for setup instructions.
+
+   .. tab:: Linux
+
+      On Debian/Ubuntu, this is a good baseline setup:
+
+      .. code-block:: bash
+
+         sudo apt update
+         sudo apt install -y python3 python3-poetry nodejs npm redis-server default-jre graphviz
+
+      If you use another distribution, install equivalent packages with your package manager.
+
+Verify that all tools are available in your shell:
+
+.. code-block:: bash
+
+   python --version
+   poetry --version
+   node --version
+   npm --version
+   redis-server --version
+   java -version
+   dot --version
+
+Set up OpenBook dependencies and initial data from the repository root:
+
+.. code-block:: bash
+
+   poetry install --no-interaction --with docs
+   npm install
+   npm run init:db
 
 Using Dev Containers
 ....................
@@ -54,7 +160,7 @@ accept the "Reopen in Container" prompt or run *Remote-Containers: Reopen in
 Container* from the command palette. Be very patient. The first build takes
 quite a while; subsequent starts are fast, though.
 
-All required tools come pre-installed in the containers, including the `Pi Coding Agent <pi.dev>`_
+All required tools come pre-installed in the containers, including the `Pi Coding Agent <https://pi.dev>`_
 as a little extra. The container uses the same ports as the local development environment,
 so you can access the application as usual.
 
@@ -62,7 +168,6 @@ so you can access the application as usual.
 
    The dev container configuration lives in the :file:`.devcontainer` directory at
    the root of the repository.
-
 
 ------------------------
 Frequently Used Commands
@@ -89,6 +194,28 @@ following commands from the repository root:
    of hard-to-debug errors. If this already happened, clean up with
    :command:`npm run fix:frontend-install`.
 
+
+Initialize Database
+...................
+
+Before starting the development server for the first time, or after deleting the :file:`db.sqlite`
+file, a new database must be set up. This can be done by running the following command from the
+project root:
+
+.. code-block:: bash
+
+   npm run init:db
+
+This executes the following commands in sequence, to create the database, load all fixtures,
+install HTML libraries and create a super user with full permissions.
+
+.. code-block:: bash
+
+   cd src
+   python manage.py migrate
+   python manage.py load_initial_data
+   python manage.py install_html_library
+   python manage.py createsuperuser
 
 Starting the Development Server
 ...............................
@@ -128,12 +255,24 @@ This is a shortcut for:
 .. code-block:: bash
 
    cd src
-   poetry run coverage run --rcfile=../pyproject.toml manage.py test
+   poetry run coverage run --rcfile=../pyproject.toml manage.py test --parallel auto
    poetry run coverage report --rcfile=../pyproject.toml -m
 
 If coverage fails, review the ``Missing`` column in the report and add tests for
 the flagged lines or branches before opening a PR.
 
+When hunting down failed tests, it can be useful to run :command:`manage.py test` manually
+with one of the following arguments:
+
+.. list-table::
+   :width: 100%
+
+   * - **Argument**
+     - Description
+   * - ``--failfast``
+     - Immediately abort after the first failed test
+   * - ``openbook_...``
+     - Module path to a single test module or class or method
 
 Quality Checks
 ..............
@@ -176,6 +315,9 @@ What these options do:
 
 ``--keep-going`` is deliberately omitted because it can swallow errors silently.
 
+When working on the documentation with :command:`npm run docs` or :command:`npm run docs:build`,
+the OpenAPI schemas included in the documentation are automatically regenerated. If needed, the
+OpenAPI schemas can also be manually regenerated with :command:`npm run docs:sync-openapi`.
 
 ---------------------
 Other Useful Commands

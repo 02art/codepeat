@@ -1,5 +1,5 @@
-# Syntax=docker/dockerfile:1.4
-FROM debian:trixie-slim
+# Syntax=docker/dockerfile:1.4@sha256:9ba7531bd80fb0a858632727cf7a112fbfd19b17e94c4e84ced81e24ef1a0dbc
+FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -20,7 +20,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 
 RUN npm install -g @mariozechner/pi-coding-agent
 
-RUN echo "cd /workspace; $(poetry env activate)" >> /root/.profile
+RUN echo "cd /workspace; \$(poetry env activate)" >> /root/.profile
 
 WORKDIR /workspace
 

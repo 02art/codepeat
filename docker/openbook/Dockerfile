@@ -1,7 +1,7 @@
 #===============================================================================
 # Python build container
 #===============================================================================
-ARG PYTHON_IMAGE=python:3.12-slim@sha256:804ddf3251a60bbf9c92e73b7566c40428d54d0e79d3428194edf40da6521286
+ARG PYTHON_IMAGE=python:3.12-slim@sha256:401f6e1a67dad31a1bd78e9ad22d0ee0a3b52154e6bd30e90be696bb6a3d7461
 ARG NODE_IMAGE=node:24-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f
 
 FROM ${PYTHON_IMAGE} AS python-build
@@ -24,8 +24,17 @@ RUN .env/bin/poetry export --format=requirements.txt --output=requirements.txt
 FROM ${NODE_IMAGE} AS nodejs-build
 
 WORKDIR /app
-COPY . .
 
+COPY bin/frontend ./bin/frontend
+COPY bin/library ./bin/library
+COPY bin/_esbuild.js ./bin/
+
+COPY package*.json ./
+
+COPY src/libraries ./src/libraries
+COPY src/frontend ./src/frontend
+
+RUN npm ci
 RUN npm run build:libraries
 RUN npm run build:frontend
 

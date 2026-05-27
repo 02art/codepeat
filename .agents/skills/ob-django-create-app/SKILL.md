@@ -20,9 +20,10 @@ existing app. Create a new app only for a clearly separate bounded domain.
 
 ## Required App Conventions
 
-- All apps live under `src/openbook/<app_label>/`.
+- All apps live under `src/openbook/<xyz>/`.
+- The Django app name is always `openbook.<xyz>`.
+- The Django app label is always `openbook_<xyz>`.
 - App names and labels use `snake_case`.
-- The Django app name is always `openbook.<app_label>`.
 - Keep app names short, domain-focused, and stable.
 - Register every new app in `INSTALLED_APPS`.
 - Every app must provide:
@@ -105,14 +106,14 @@ from django.utils.translation import gettext_lazy as _
 
 class ExampleApp(AppConfig):
     name  = "openbook.example"
-    label = "example"
+    label = "openbook_example"
     verbose_name = _("Example")
 ```
 
 Rules:
 
 * `name` must equal `openbook.<app_label>`.
-* `label` must equal the package name.
+* `label` must equal `openbook_<app_label>`.
 * `verbose_name` must be translatable using `_()`.
 * Do not omit `label`.
 * Use stable identifiers. Renaming labels later is expensive.
