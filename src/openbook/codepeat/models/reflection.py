@@ -6,7 +6,6 @@ from .submission import Submission
 class Reflection(UUIDMixin, CreatedModifiedByMixin):
     submission = models.OneToOneField(Submission, on_delete=models.CASCADE, related_name="reflection", verbose_name=_("Submission"))
     answers = models.JSONField(verbose_name=_("Reflection Answers"))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
 
     class Meta:
         verbose_name = _("Reflection")

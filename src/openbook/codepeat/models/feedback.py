@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from openbook.auth.models import User
+from openbook.auth.models import User # User import from django.conf settings ?
 from openbook.core.models import UUIDMixin, CreatedModifiedByMixin
 from .submission import Submission
 
@@ -9,7 +9,6 @@ class Feedback(UUIDMixin, CreatedModifiedByMixin):
     lecturer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="given_feedbacks", verbose_name=_("Lecturer"))
     comments = models.TextField(verbose_name=_("Comments"))
     rating = models.PositiveSmallIntegerField(verbose_name=_("Rating"))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
 
     class Meta:
         verbose_name = _("Feedback")

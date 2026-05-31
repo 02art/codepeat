@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from openbook.auth.models import User
 from openbook.core.models import UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin
 
 class Challenge(UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin):
@@ -26,6 +25,3 @@ class Challenge(UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin):
         verbose_name = _("Challenge")
         verbose_name_plural = _("Challenges")
         ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.title

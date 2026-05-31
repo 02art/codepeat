@@ -4,10 +4,15 @@ from openbook.core.models import UUIDMixin, CreatedModifiedByMixin
 from .submission import Submission
 
 class TestResult(UUIDMixin, CreatedModifiedByMixin):
+    class StatusChoices(models.TextChoices):
+        PENDING = "pending", _("Pending")
+        PASSED  = "passed",  _("Passed")
+        FAILED  = "failed",  _("Failed")
+        ERROR   = "error",   _("Error")
+
     submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name="test_results", verbose_name=_("Submission"))
-    status = models.CharField(max_length=20, verbose_name=_("Status"))
+    status     = models.CharField(max_length=20, choices=StatusChoices, default=StatusChoices.PENDING, verbose_name=_("Status"))
     output = models.TextField(verbose_name=_("Output"))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
 
     class Meta:
         verbose_name = _("Test Result")
