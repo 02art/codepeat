@@ -1,6 +1,6 @@
 from openbook.drf.flex_serializers import FlexFieldsModelSerializer
-from openbook.drf.viewsets import with_flex_fields_parameters
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from openbook.drf.viewsets import ModelViewSetMixin, with_flex_fields_parameters
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin
 from rest_framework.viewsets import GenericViewSet
 from django_filters.filterset import FilterSet
 from drf_spectacular.utils import extend_schema
@@ -25,7 +25,7 @@ class ReflectionSerializer(FlexFieldsModelSerializer):
 
 @extend_schema(tags=["Codepeat: Reflections"])
 @with_flex_fields_parameters()
-class ReflectionViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+class ReflectionViewSet(ModelViewSetMixin, ListModelMixin, RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     queryset = Reflection.objects.all()
     serializer_class = ReflectionSerializer
     filterset_class = ReflectionFilter

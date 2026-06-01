@@ -1,0 +1,10 @@
+- model: codepeat.reflection
+  pk: ffffffff-ffff-ffff-ffff-ffffffffffff
+  fields:
+    submission: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+    answers:
+      what_went_well: "I understood the modulo logic quickly."
+      what_was_difficult: "Edge cases for numbers divisible by both 3 and 5."
+      what_would_i_do_differently: "Write tests first next time."
+    created_by: null
+    modified_by: null

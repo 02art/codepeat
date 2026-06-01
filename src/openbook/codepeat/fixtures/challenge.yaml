@@ -1,0 +1,38 @@
+- model: codepeat.challenge
+  pk: 11111111-1111-1111-1111-111111111111
+  fields:
+    name: "FizzBuzz"
+    description: "Implement FizzBuzz for numbers 1–100."
+    text_format: "MD"
+    difficulty: easy
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    modified_by: null
+
+- model: codepeat.challenge
+  pk: 22222222-2222-2222-2222-222222222222
+  fields:
+    name: "Binary Search"
+    description: "Implement binary search on a sorted list."
+    text_format: "MD"
+    difficulty: medium
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    modified_by: null
+
+- model: codepeat.challenge
+  pk: 33333333-3333-3333-3333-333333333333
+  fields:
+    name: "Group Sorting Algorithm"
+    description: "Implement and benchmark three sorting algorithms as a group."
+    text_format: "MD"
+    difficulty: hard
+    visibility: private
+    type: group
+    course: null
+    created_by: null
+    modified_by: null
