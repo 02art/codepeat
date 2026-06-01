@@ -1,8 +1,9 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from openbook.auth.models import User # User import from django.conf settings ?
-from openbook.core.models import UUIDMixin, CreatedModifiedByMixin
-from .challenge import Challenge
+from django.db                                      import models
+from django.utils.translation                       import gettext_lazy as _
+from openbook.auth.models                           import User # User import from django.conf settings ?
+from openbook.core.models.mixins.uuid               import UUIDMixin
+from openbook.auth.models.mixins.audit              import CreatedModifiedByMixin
+from .challenge                                     import Challenge
 
 class Submission(UUIDMixin, CreatedModifiedByMixin):
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, related_name="submissions", verbose_name=_("Challenge"))

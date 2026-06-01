@@ -1,6 +1,10 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from openbook.core.models import UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin
+from django.db                                      import models
+from django.utils.translation                       import gettext_lazy as _
+from openbook.core.models.mixins.uuid               import UUIDMixin
+from openbook.auth.models.mixins.audit              import CreatedModifiedByMixin
+from openbook.core.models.mixins.text               import NameDescriptionMixin
+
+# ask to change init in models.mixins
 
 class Challenge(UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin):
     class DifficultyChoices(models.TextChoices):

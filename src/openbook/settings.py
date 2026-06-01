@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "openbook.core",
     "openbook.auth",
     "openbook.content",
+    "openbook.codepeat",
 
     # 3rd-party reusable apps
     "daphne",

@@ -1,11 +1,12 @@
-from rest_flex_fields.serializers import FlexFieldsModelSerializer
-from rest_flex_fields.views import FlexFieldsMixin
-from rest_framework import viewsets
-from django_filters import rest_framework as filters
-from drf_spectacular.utils import extend_schema, with_flex_fields_parameters
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets import with_flex_fields_parameters
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.viewsets import GenericViewSet
+from django_filters.filterset import FilterSet
+from drf_spectacular.utils import extend_schema
 from ..models.feedback import Feedback
 
-class FeedbackFilter(filters.FilterSet):
+class FeedbackFilter(FilterSet):
     class Meta:
         model = Feedback
         fields = {
@@ -18,18 +19,16 @@ class FeedbackFilter(filters.FilterSet):
 class FeedbackSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = Feedback
-        fields = [
-            "id", "submission", "lecturer", "comments", "rating", "created_at", "modified_at"
-        ]
+        fields = ["id", "submission", "lecturer", "comments", "rating", "created_at", "modified_at"]
         read_only_fields = ["id", "created_at", "modified_at"]
-    expandable_fields = {
-        "submission": "openbook.codepeat.viewsets.submission.SubmissionSerializer",
-        "lecturer": "openbook.auth.viewsets.user.UserSerializer",
-    }
+        expandable_fields = {
+            "submission": "openbook.codepeat.viewsets.submission.SubmissionSerializer",
+            "lecturer": "openbook.auth.viewsets.user.UserSerializer",
+        }
 
 @extend_schema(tags=["Codepeat: Feedback"])
 @with_flex_fields_parameters()
-class FeedbackViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
+class FeedbackViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
     filterset_class = FeedbackFilter

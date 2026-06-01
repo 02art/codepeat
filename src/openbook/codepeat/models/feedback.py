@@ -1,8 +1,9 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from openbook.auth.models import User # User import from django.conf settings ?
-from openbook.core.models import UUIDMixin, CreatedModifiedByMixin
-from .submission import Submission
+from django.db                                      import models
+from django.utils.translation                       import gettext_lazy as _
+from openbook.auth.models                           import User # User import from django.conf settings ?
+from openbook.core.models.mixins.uuid               import UUIDMixin
+from openbook.auth.models.mixins.audit              import CreatedModifiedByMixin
+from .submission                                    import Submission
 
 class Feedback(UUIDMixin, CreatedModifiedByMixin):
     submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name="feedbacks", verbose_name=_("Submission"))

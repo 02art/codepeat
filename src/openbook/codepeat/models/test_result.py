@@ -1,7 +1,8 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from openbook.core.models import UUIDMixin, CreatedModifiedByMixin
-from .submission import Submission
+from django.db                                      import models
+from django.utils.translation                       import gettext_lazy as _
+from openbook.core.models.mixins.uuid               import UUIDMixin
+from openbook.auth.models.mixins.audit              import CreatedModifiedByMixin
+from .submission                                    import Submission
 
 class TestResult(UUIDMixin, CreatedModifiedByMixin):
     class StatusChoices(models.TextChoices):

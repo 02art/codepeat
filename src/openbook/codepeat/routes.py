@@ -5,11 +5,9 @@ from .viewsets.reflection import ReflectionViewSet
 from .viewsets.test_result import TestResultViewSet
 from .viewsets.feedback import FeedbackViewSet
 
-router = DefaultRouter()
-router.register(r'challenges', ChallengeViewSet, basename='challenge')
-router.register(r'submissions', SubmissionViewSet, basename='submission')
-router.register(r'reflections', ReflectionViewSet, basename='reflection')
-router.register(r'test-results', TestResultViewSet, basename='testresult')
-router.register(r'feedbacks', FeedbackViewSet, basename='feedback')
-
-api_urlpatterns = router.urls
+def register_api_routes(router, prefix):
+    router.register(rf'{prefix}/challenges', ChallengeViewSet, basename='challenge')
+    router.register(rf'{prefix}/submissions', SubmissionViewSet, basename='submission')
+    router.register(rf'{prefix}/reflections', ReflectionViewSet, basename='reflection')
+    router.register(rf'{prefix}/test-results', TestResultViewSet, basename='testresult')
+    router.register(rf'{prefix}/feedbacks', FeedbackViewSet, basename='feedback')
