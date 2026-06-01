@@ -23,7 +23,14 @@ class Challenge(UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin):
     difficulty = models.CharField(max_length=10, choices=DifficultyChoices.choices, default=DifficultyChoices.EASY, verbose_name=_("Difficulty"))
     visibility = models.CharField(max_length=10, choices=VisibilityChoices.choices, default=VisibilityChoices.PUBLIC, verbose_name=_("Visibility"))
     type = models.CharField(max_length=10, choices=TypeChoices.choices, default=TypeChoices.SOLO, verbose_name=_("Type"))
-    #foreign key to the course
+    course = models.ForeignKey(
+        "openbook_content.Course",
+        verbose_name = _("Course"),
+        on_delete    = models.SET_NULL,
+        related_name = "challenges",
+        null         = True,
+        blank        = True,
+    )  # Optional
 
     class Meta:
         verbose_name = _("Challenge")
