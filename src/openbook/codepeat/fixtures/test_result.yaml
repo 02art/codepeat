@@ -1,0 +1,17 @@
+- model: codepeat.testresult
+  pk: cccccccc-cccc-cccc-cccc-cccccccccccc
+  fields:
+    submission: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+    status: passed
+    output: "All 10 tests passed."
+    created_by: null
+    modified_by: null
+
+- model: codepeat.testresult
+  pk: dddddddd-dddd-dddd-dddd-dddddddddddd
+  fields:
+    submission: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+    status: failed
+    output: "Test 3 failed: expected index 4, got 5."
+    created_by: null
+    modified_by: null

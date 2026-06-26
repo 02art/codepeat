@@ -1,0 +1,9 @@
+- model: codepeat.feedback
+  pk: eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee
+  fields:
+    submission: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+    lecturer: 1
+    comments: "Good structure, but variable naming could be improved."
+    rating: 4
+    created_by: null
+    modified_by: null
