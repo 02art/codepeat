@@ -3,10 +3,10 @@
   "private": true,
   "packageManager": "npm@11.x",
   "scripts": {
-    "clean": "npm run clean:admin && npm run clean:app",
-    "build": "npm run build:admin && npm run build:app",
-    "lint": "npm run lint:admin  && npm run lint:app",
-    "watch": "conc -n admin,app -c auto \"npm run watch:admin\" \"npm run watch:app\"",
+    "clean": "npm run clean:admin && npm run clean:app && npm run clean:codepeat",
+    "build": "npm run build:admin && npm run build:app && npm run build:codepeat",
+    "lint": "npm run lint:admin  && npm run lint:app && npm run lint:codepeat",
+    "watch": "conc -n admin,app,codepeat -c auto \"npm run watch:admin\" \"npm run watch:app\" \"npm run watch:codepeat\"",
     "build:admin": "cd admin && npm run build",
     "clean:admin": "cd admin && npm run clean",
     "lint:admin": "cd admin && npm run lint",
@@ -14,6 +14,11 @@
     "build:app": "cd app && npm run build",
     "clean:app": "cd app && npm run clean",
     "lint:app": "cd app && npm run lint",
-    "watch:app": "cd app && npm run watch"
+    "watch:app": "cd app && npm run watch",
+    "build:codepeat": "cd codepeat && npm run build",
+    "clean:codepeat": "cd codepeat && npm run clean",
+    "lint:codepeat": "cd codepeat && npm run lint",
+    "watch:codepeat": "cd codepeat && npm run watch",
+    "dev:codepeat": "cd codepeat && npm run dev"
   }
 }
