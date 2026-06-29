@@ -23,6 +23,15 @@ class Challenge(UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin):
     difficulty = models.CharField(max_length=10, choices=DifficultyChoices.choices, default=DifficultyChoices.EASY, verbose_name=_("Difficulty"))
     visibility = models.CharField(max_length=10, choices=VisibilityChoices.choices, default=VisibilityChoices.PUBLIC, verbose_name=_("Visibility"))
     type = models.CharField(max_length=10, choices=TypeChoices.choices, default=TypeChoices.SOLO, verbose_name=_("Type"))
+
+    # Detail-page content. Constraints are one per line (like the description's task lines).
+    # The worked example is optional; it is only shown when input and output are both present.
+    constraints     = models.TextField(verbose_name=_("Constraints"), blank=True, default="")
+    example_language = models.CharField(verbose_name=_("Example Language"), max_length=50, blank=True, default="")
+    example_input   = models.TextField(verbose_name=_("Example Input"), blank=True, default="")
+    example_output  = models.TextField(verbose_name=_("Example Output"), blank=True, default="")
+    views           = models.PositiveIntegerField(verbose_name=_("Views"), default=0)
+
     course = models.ForeignKey(
         "openbook_content.Course",
         verbose_name = _("Course"),

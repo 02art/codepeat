@@ -168,7 +168,7 @@ Lists all coding challenges with quick filters, search, sorting and per-user pro
 
 {#snippet filterIcon(name: FilterIcon)}
     {#if name === "logo"}
-        <img src="/codepeat-logo.png" alt="" class="size-5 object-contain" />
+        <img src="codepeat-logo.png" alt="" class="size-5 object-contain" />
     {:else if name === "fire"}
         <Icon name="flame" />
     {:else}
@@ -233,15 +233,27 @@ Lists all coding challenges with quick filters, search, sorting and per-user pro
             <p class="text-base-content/50 text-sm">Challengeübersicht</p>
             <h1 class="mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">CodePeat Challenges</h1>
         </div>
-        <button
-            class="btn btn-circle btn-ghost border-base-200 bg-base-100 mt-2 shadow-sm {showFavoritesOnly ? 'text-warning' : ''}"
-            aria-label="Nur Favoriten anzeigen"
-            aria-pressed={showFavoritesOnly}
-            title={showFavoritesOnly ? "Alle Challenges anzeigen" : "Nur Favoriten anzeigen"}
-            onclick={() => (showFavoritesOnly = !showFavoritesOnly)}
-        >
-            <Icon name="star" filled={showFavoritesOnly} />
-        </button>
+        <div class="mt-2 flex items-center gap-2">
+            {#if $currentUser?.canCreateChallenges}
+                <a
+                    href="#/challenges/new"
+                    class="btn btn-circle btn-ghost border-base-200 bg-base-100 shadow-sm"
+                    aria-label="Challenge erstellen"
+                    title="Challenge erstellen"
+                >
+                    <Icon name="plus" />
+                </a>
+            {/if}
+            <button
+                class="btn btn-circle btn-ghost border-base-200 bg-base-100 shadow-sm {showFavoritesOnly ? 'text-warning' : ''}"
+                aria-label="Nur Favoriten anzeigen"
+                aria-pressed={showFavoritesOnly}
+                title={showFavoritesOnly ? "Alle Challenges anzeigen" : "Nur Favoriten anzeigen"}
+                onclick={() => (showFavoritesOnly = !showFavoritesOnly)}
+            >
+                <Icon name="star" filled={showFavoritesOnly} />
+            </button>
+        </div>
     </div>
 
     <div class="mt-8">

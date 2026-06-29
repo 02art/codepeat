@@ -58,3 +58,4 @@ if settings.DEBUG:
 
     # Frontend SPA
     urlpatterns += static("app/", document_root=f"{settings.BASE_DIR}/frontend/app/dist/openbook/app")
+    urlpatterns += static("codepeat/", document_root=f"{settings.BASE_DIR}/frontend/codepeat/dist/openbook/codepeat")

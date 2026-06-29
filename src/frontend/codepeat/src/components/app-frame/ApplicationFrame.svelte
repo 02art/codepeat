@@ -6,16 +6,19 @@ pages, which bring their own standalone layout.
 <script lang="ts">
     import Router, {push} from "svelte-spa-router";
 
-    import {currentUser, logout} from "../../services/user/user.store.js";
+    import {currentUser, logout, sessionReady} from "../../services/user/user.store.js";
     import Dropdown from "../basic/Dropdown.svelte";
     import Icon from "../basic/Icon.svelte";
+    import LevelBadge from "../basic/LevelBadge.svelte";
     import SiteFooter from "../basic/SiteFooter.svelte";
     import routes from "../routes.js";
 
     const isAuthenticated = $derived($currentUser !== null);
     const handle = $derived($currentUser?.handle ?? "");
-    const streak = $derived($currentUser?.streak ?? 0);
     const avatarUrl = $derived($currentUser?.avatarUrl ?? null);
+
+    const progress = $derived($currentUser?.progress ?? {level: 1, xp: 0, xpIntoLevel: 0, xpForNextLevel: 100});
+    const xpPercent = $derived(progress.xpForNextLevel > 0 ? Math.min(100, Math.round((progress.xpIntoLevel / progress.xpForNextLevel) * 100)) : 100);
 
     let path = $state(currentPath());
 
@@ -28,12 +31,52 @@ pages, which bring their own standalone layout.
     });
 
     const bareLayout = $derived(path.startsWith("/register") || path.startsWith("/login"));
+    // The reflection questionnaire is a focused flow: hide the navbar (but keep the footer).
+    const isReflection = $derived(path.endsWith("/reflection"));
     const coursesActive = $derived(path.startsWith("/courses"));
     const challengesActive = $derived(path.startsWith("/challenges"));
+
+    // The route to redirect to for the current path + auth state, or null when allowed here.
+    const redirect = $derived($sessionReady ? guardRedirect(path, $currentUser !== null) : null);
+
+    // Enforce the guard: bounce to the appropriate page whenever the route isn't allowed.
+    $effect(() => {
+        if (redirect !== null) {
+            void push(redirect);
+        }
+    });
 
     function currentPath(): string {
         const hash = window.location.hash.replace(/^#/, "");
         return hash.split("?")[0] || "/";
+    }
+
+    /** Pages reachable only while signed out (signed-in users are sent to the challenges). */
+    function isGuestOnly(p: string): boolean {
+        return p === "/login" || p === "/register" || p.startsWith("/register/");
+    }
+
+    /** Pages reachable by anyone (landing, legal, and the emailed token flows). */
+    function isPublic(p: string): boolean {
+        return (
+            p === "/" ||
+            p === "/impressum" ||
+            p === "/datenschutz" ||
+            p.startsWith("/verify-email") ||
+            p.startsWith("/delete-account") ||
+            p.startsWith("/change-password")
+        );
+    }
+
+    /** Where to redirect for a path given the auth state, or null if it may be shown. */
+    function guardRedirect(p: string, authed: boolean): string | null {
+        if (isGuestOnly(p)) {
+            return authed ? "/challenges" : null;
+        }
+        if (isPublic(p)) {
+            return null;
+        }
+        return authed ? null : "/login"; // everything else requires authentication
     }
 
     async function handleLogout(): Promise<void> {
@@ -42,12 +85,24 @@ pages, which bring their own standalone layout.
     }
 </script>
 
+{#snippet xpProgress()}
+    <div class="w-full px-1 py-1">
+        <div class="text-base-content/70 mb-1.5 flex items-center justify-between text-xs font-semibold">
+            <span class="text-primary">Level {progress.level}</span>
+            <span>{progress.xpIntoLevel}/{progress.xpForNextLevel} XP</span>
+        </div>
+        <div class="bg-base-300 h-2 overflow-hidden rounded-full">
+            <div class="bg-primary h-full rounded-full transition-all duration-500" style="width: {xpPercent}%"></div>
+        </div>
+    </div>
+{/snippet}
+
 <div class="bg-base-200 flex min-h-screen flex-col">
-    {#if !bareLayout}
+    {#if !bareLayout && !isReflection}
         <header class="px-4 pt-4 sm:px-6 sm:pt-6">
             <div class="bg-base-100 mx-auto flex h-[77px] max-w-[1600px] items-center justify-between gap-3 rounded-2xl px-4 shadow-sm sm:px-8">
                 <a href="#/" aria-label="CodePeat Startseite" class="flex shrink-0 items-center gap-2">
-                    <img src="/codepeat-logo.png" alt="" class="h-10 w-auto sm:h-11" />
+                    <img src="codepeat-logo.png" alt="" class="h-10 w-auto sm:h-11" />
                     <span class="hidden text-lg leading-tight font-extrabold tracking-tight sm:block">
                         <span class="block">Code</span>
                         <span class="block">Peat</span>
@@ -83,12 +138,9 @@ pages, which bring their own standalone layout.
 
                 <div class="flex shrink-0 items-center gap-3 md:gap-5">
                     {#if isAuthenticated}
-                        <div class="flex items-center gap-1.5" role="img" aria-label="{streak} Tage Streak" title="{streak} Tage Streak">
-                            <span class="text-lg font-bold {streak === 0 ? 'text-base-content/40' : ''}">{streak}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6 {streak === 0 ? 'text-base-content/30' : 'text-warning'}">
-                                <path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 0 0-1.071-.136 9.742 9.742 0 0 0-3.539 6.176 7.547 7.547 0 0 1-1.705-1.715.75.75 0 0 0-1.152-.082A9 9 0 1 0 15.68 4.534a7.46 7.46 0 0 1-2.717-2.248ZM12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
+                        <span title="Level {progress.level}">
+                            <LevelBadge level={progress.level} class="size-9" />
+                        </span>
 
                         <span class="hidden text-sm font-bold whitespace-nowrap lg:inline">
                             Hallo <span class="text-primary">{handle}</span>
@@ -115,6 +167,7 @@ pages, which bring their own standalone layout.
                                         </div>
                                     {/if}
                                 {/snippet}
+                                <li class="menu-title">{@render xpProgress()}</li>
                                 <li><a href="#/settings"><Icon name="settings" /> Profileinstellungen</a></li>
                                 <li><button onclick={handleLogout}><Icon name="logout" /> Abmelden</button></li>
                             </Dropdown>
@@ -137,6 +190,7 @@ pages, which bring their own standalone layout.
                             {/snippet}
                             {#if isAuthenticated}
                                 <li class="menu-title text-xs">Hallo {handle}</li>
+                                <li class="menu-title">{@render xpProgress()}</li>
                             {/if}
                             <li>
                                 <a href="#/courses" aria-current={coursesActive ? "page" : undefined} class:menu-active={coursesActive}>
@@ -164,7 +218,13 @@ pages, which bring their own standalone layout.
     {/if}
 
     <main class="flex flex-1 flex-col">
-        <Router {routes} />
+        {#if !$sessionReady || redirect !== null}
+            <div class="flex flex-1 items-center justify-center py-24" role="status" aria-label="Wird geladen">
+                <span class="loading loading-spinner loading-lg text-primary"></span>
+            </div>
+        {:else}
+            <Router {routes} />
+        {/if}
     </main>
 
     {#if !bareLayout}

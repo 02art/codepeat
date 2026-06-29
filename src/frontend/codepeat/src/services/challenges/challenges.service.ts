@@ -1,56 +1,119 @@
-/** Challenge data access. Mock-backed; swap bodies for the generated client. */
+/** Challenge data access, backed by the CodePeat REST API via the generated client. */
 
-import {CURRENT_USER_ID, MOCK_USERS} from "../user/user.mock.js";
-import {MOCK_CHALLENGE_DETAILS, MOCK_CHALLENGES, MOCK_USER_PROGRESS} from "./challenges.mock.js";
-import type {Challenge, ChallengeDetail} from "./challenges.types.js";
+import backend from "../../backend.js";
+import type {Challenge as ApiChallenge, PatchedChallenge, Submission} from "../../api-client/index.js";
+import {toChallenge, toChallengeDetail} from "./challenges.mapper.js";
+import type {Challenge, ChallengeDetail, ChallengeDraft} from "./challenges.types.js";
 
-const NETWORK_DELAY_MS = 300;
+/** Page size for fetching the catalogue; the overview filters, sorts and paginates client-side. */
+const PAGE_SIZE = 100;
 
-function delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/** Fetch all available challenges, annotated with the current user's progress. */
+/** Fetch all challenges across every page (the overview needs the full set for local filtering). */
 export async function fetchChallenges(): Promise<Challenge[]> {
-    await delay(NETWORK_DELAY_MS);
-    const solvedIds = new Set(MOCK_USER_PROGRESS[CURRENT_USER_ID] ?? []);
-    return structuredClone(MOCK_CHALLENGES).map((challenge) => ({
-        ...challenge,
-        solved: solvedIds.has(challenge.id),
-    }));
-}
+    const challenges: Challenge[] = [];
+    let page = 1;
+    let hasMore = true;
 
-/** Fetch a single challenge with its full detail and resolved author. */
-export async function fetchChallenge(id: string): Promise<ChallengeDetail> {
-    await delay(NETWORK_DELAY_MS);
-
-    const base = MOCK_CHALLENGES.find((c) => c.id === id);
-    const content = MOCK_CHALLENGE_DETAILS[id];
-    if (base === undefined || content === undefined) {
-        throw new Error(`Challenge ${id} wurde nicht gefunden.`);
+    while (hasMore) {
+        const {results, next} = await backend.codepeat.challenges.codepeatChallengesList({
+            page,
+            pageSize: PAGE_SIZE,
+            sort: "-created_at",
+        });
+        challenges.push(...results.map(toChallenge));
+        hasMore = next != null;
+        page += 1;
     }
 
-    const author = MOCK_USERS.find((u) => u.id === base.createdBy);
-    const solvedIds = new Set(MOCK_USER_PROGRESS[CURRENT_USER_ID] ?? []);
+    return challenges;
+}
 
+/** Fetch a single challenge with its full detail and the creator resolved for display. */
+export async function fetchChallenge(id: string): Promise<ChallengeDetail> {
+    const challenge = await backend.codepeat.challenges.codepeatChallengesRetrieve({
+        id,
+        expand: "created_by",
+    });
+    return toChallengeDetail(challenge);
+}
+
+/**
+ * Mark a challenge as favorited.
+ *
+ * Favorites have no backend representation yet (see integration plan, Phase 4), so this is a
+ * client-side no-op that resolves — the overview's optimistic toggle holds for the session.
+ */
+export async function setFavorite(_id: string, _favorited: boolean): Promise<void> {
+    return Promise.resolve();
+}
+
+/** Map an editor draft to the API body. Casts away the generated client's readonly-Omit typing. */
+function draftToBody(draft: ChallengeDraft): ApiChallenge {
     return {
-        ...structuredClone(base),
-        ...structuredClone(content),
-        solved: solvedIds.has(base.id),
-        creator: {
-            displayName: author?.displayName ?? "Unbekannt",
-            avatarUrl: author?.avatarUrl ?? null,
-            verified: author?.verified ?? false,
-        },
+        name: draft.title.trim(),
+        description: draft.description,
+        textFormat: "MD",
+        difficulty: draft.difficulty,
+        visibility: draft.visibility,
+        type: "solo",
+        constraints: draft.constraints,
+        exampleLanguage: draft.exampleLanguage,
+        exampleInput: draft.exampleInput,
+        exampleOutput: draft.exampleOutput,
+        course: null,
+    } as unknown as ApiChallenge;
+}
+
+/** Load a challenge's raw, editable fields (the editor needs the unsplit text, unlike the detail view). */
+export async function fetchChallengeDraft(id: string): Promise<ChallengeDraft> {
+    const dto = await backend.codepeat.challenges.codepeatChallengesRetrieve({id});
+    return {
+        title: dto.name,
+        description: dto.description ?? "",
+        constraints: dto.constraints ?? "",
+        exampleLanguage: dto.exampleLanguage?.trim() || "Java",
+        exampleInput: dto.exampleInput ?? "",
+        exampleOutput: dto.exampleOutput ?? "",
+        difficulty: dto.difficulty ?? "easy",
+        visibility: dto.visibility === "private" ? "private" : "public",
     };
 }
 
-/** Mark a challenge as favorited (or not). */
-export async function setFavorite(id: string, favorited: boolean): Promise<void> {
-    await delay(NETWORK_DELAY_MS / 2);
-    const challenge = MOCK_CHALLENGES.find((c) => c.id === id);
-    if (challenge === undefined) {
-        throw new Error(`Challenge ${id} wurde nicht gefunden.`);
-    }
-    challenge.favorited = favorited;
+/** Create a challenge from the editor draft; returns the new challenge's id. */
+export async function createChallenge(draft: ChallengeDraft): Promise<string> {
+    const created = await backend.codepeat.challenges.codepeatChallengesCreate({challenge: draftToBody(draft)});
+    return created.id;
+}
+
+/** Update an existing challenge from the editor draft. */
+export async function updateChallenge(id: string, draft: ChallengeDraft): Promise<void> {
+    await backend.codepeat.challenges.codepeatChallengesPartialUpdate({
+        id,
+        patchedChallenge: draftToBody(draft) as unknown as PatchedChallenge,
+    });
+}
+
+/** Permanently delete a challenge (creator only — enforced server-side). */
+export async function deleteChallenge(id: string): Promise<void> {
+    await backend.codepeat.challenges.codepeatChallengesDestroy({id});
+}
+
+/** Create a fresh, time-limited invitation link for a private challenge. */
+export async function createInviteLink(id: string): Promise<{url: string; expiresIn: number}> {
+    const res = await backend.codepeat.challenges.codepeatChallengesInviteLinkCreate({id});
+    return {url: res.url, expiresIn: res.expiresIn};
+}
+
+/** Redeem an invitation link, granting the current user permanent access; returns the challenge id. */
+export async function unlockChallenge(token: string): Promise<string> {
+    const res = await backend.codepeat.challenges.codepeatChallengesUnlockCreate({challengeUnlock: {token}});
+    return res.challenge;
+}
+
+/** Record a submission for a challenge (this is what earns the user XP); returns the submission id. */
+export async function submitChallenge(id: string): Promise<string> {
+    // Only `challenge` is sent; the server sets the user and the readonly fields. The cast works
+    // around the generated client typing the body as the full (readonly-laden) Submission.
+    const created = await backend.codepeat.submissions.codepeatSubmissionsCreate({submission: {challenge: id} as unknown as Submission});
+    return created.id;
 }

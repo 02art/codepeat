@@ -7,7 +7,8 @@ routes to the confirmation page once the verification email has been queued.
     import {push} from "svelte-spa-router";
 
     import {emailError, passwordError, PASSWORD_MIN_LENGTH} from "../../../services/auth/auth.validation.js";
-    import {login, register} from "../../../services/user/user.store.js";
+    import {loginWithProvider} from "../../../services/auth/auth.service.js";
+    import {register} from "../../../services/user/user.store.js";
     import AuthField from "../../basic/AuthField.svelte";
     import GithubLogo from "../../basic/GithubLogo.svelte";
     import Icon from "../../basic/Icon.svelte";
@@ -43,18 +44,6 @@ routes to the confirmation page once the verification email has been queued.
         }
     }
 
-    async function registerWithGithub(): Promise<void> {
-        error = null;
-        submitting = true;
-        try {
-            await login();
-            await push("/challenges");
-        } catch {
-            error = "Registrierung über GitHub fehlgeschlagen.";
-        } finally {
-            submitting = false;
-        }
-    }
 </script>
 
 <AuthLayout>
@@ -98,7 +87,7 @@ routes to the confirmation page once the verification email has been queued.
                 type="button"
                 class="btn btn-outline w-full rounded-full sm:w-auto sm:flex-1"
                 disabled={submitting}
-                onclick={registerWithGithub}
+                onclick={() => loginWithProvider("github")}
             >
                 <GithubLogo class="size-5" />
                 Mit GitHub registrieren

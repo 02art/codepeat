@@ -1,7 +1,7 @@
 <!--
 @component
-Source-code upload dialog (zip via drag & drop or file picker). Upload progress
-is simulated; the submission is not wired to a backend yet.
+Source-code upload dialog (zip via drag & drop or file picker). The upload itself
+is simulated (the file is not stored); the submission record is created by the caller.
 -->
 <script lang="ts">
     import Icon from "../../basic/Icon.svelte";
@@ -124,7 +124,7 @@ is simulated; the submission is not wired to a backend yet.
 
     <div class="mt-6 flex flex-col-reverse justify-center gap-3 sm:flex-row">
         <button type="button" class="btn btn-outline rounded-full px-8" onclick={onClose}>Abbrechen</button>
-        <button type="button" class="btn btn-primary rounded-full px-8" disabled={file === null} onclick={onSubmit}>
+        <button type="button" class="btn btn-primary rounded-full px-8" disabled={file === null || progress < 100} onclick={onSubmit}>
             Einreichen
         </button>
     </div>

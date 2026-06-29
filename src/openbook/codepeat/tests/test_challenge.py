@@ -42,8 +42,10 @@ class Challenge_ViewSet_Tests(ModelViewSetTestMixin, Challenge_Test_Mixin, TestC
     sort_field    = "name"
 
     operations = {
-        "list":           {"requires_auth": True},
-        "retrieve":       {"requires_auth": True},
+        # Challenges are a public catalogue: list/retrieve are open to everyone, with no
+        # view permission required (so the queryset is not object-permission filtered).
+        "list":           {"requires_auth": False, "model_permission": ()},
+        "retrieve":       {"requires_auth": False, "model_permission": ()},
         "create":         {"requires_auth": True, "request_data": {"name": "New", "description": "desc"}},
         "update":         {"supported": False},
         "partial_update": {"supported": False},

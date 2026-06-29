@@ -6,8 +6,9 @@ single challenge, with a running solve timer that can be paused.
 <script lang="ts">
     import {push} from "svelte-spa-router";
 
-    import {fetchChallenge} from "../../../services/challenges/challenges.service.js";
+    import {fetchChallenge, submitChallenge} from "../../../services/challenges/challenges.service.js";
     import type {ChallengeDetail} from "../../../services/challenges/challenges.types.js";
+    import {refreshSession} from "../../../services/user/user.store.js";
     import Icon from "../../basic/Icon.svelte";
     import VerifiedBadge from "../../basic/VerifiedBadge.svelte";
     import CodeBlock from "./CodeBlock.svelte";
@@ -81,19 +82,30 @@ single challenge, with a running solve timer that can be paused.
     }
 
     function formatDate(isoDate: string): string {
-        return new Date(isoDate).toLocaleDateString("de-DE", {day: "numeric", month: "short", year: "numeric"});
+        const date = new Date(isoDate);
+        return isoDate === "" || Number.isNaN(date.getTime())
+            ? ""
+            : date.toLocaleDateString("de-DE", {day: "numeric", month: "short", year: "numeric"});
     }
 
-    function submitSolution(): void {
+    async function submitSolution(): Promise<void> {
         if (challenge === null) {
             return;
         }
+        const id = challenge.id;
         submitOpen = false;
-        void push(`/challenges/${challenge.id}/reflection`);
+        let submissionId = "";
+        try {
+            submissionId = await submitChallenge(id);
+            await refreshSession(); // reflect newly earned XP in the navbar
+        } catch {
+            // Even if recording fails, continue to the reflection step.
+        }
+        void push(submissionId ? `/challenges/${id}/reflection?submission=${submissionId}` : `/challenges/${id}/reflection`);
     }
 </script>
 
-<div class="mx-auto w-full max-w-[1280px] px-4 py-8 sm:px-6">
+<div class="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6">
     {#if loading}
         <div class="flex justify-center py-24">
             <span class="loading loading-spinner loading-lg text-primary" aria-hidden="true"></span>
@@ -138,9 +150,11 @@ single challenge, with a running solve timer that can be paused.
                         {/if}
                     </div>
                     <div class="text-base-content/50 mt-1 flex items-center gap-4 text-sm">
-                        <span class="flex items-center gap-1.5">
-                            <Icon name="eye" class="size-4" /> {challenge.views}
-                        </span>
+                        {#if challenge.views > 0}
+                            <span class="flex items-center gap-1.5">
+                                <Icon name="eye" class="size-4" /> {challenge.views}
+                            </span>
+                        {/if}
                         <span class="flex items-center gap-1.5">
                             <Icon name="calendar" class="size-4" /> {formattedDate}
                         </span>
@@ -180,26 +194,30 @@ single challenge, with a running solve timer that can be paused.
                 </ul>
             </section>
 
-            <hr class="border-base-200 my-8" />
+            {#if challenge.example}
+                <hr class="border-base-200 my-8" />
 
-            <section>
-                <h2 class="text-xl font-bold">Beispiel</h2>
-                <div class="mt-4 space-y-6">
-                    <CodeBlock label="Input" language={challenge.example.language} code={challenge.example.input} />
-                    <CodeBlock label="Output" language={challenge.example.language} code={challenge.example.output} />
-                </div>
-            </section>
+                <section>
+                    <h2 class="text-xl font-bold">Beispiel</h2>
+                    <div class="mt-4 space-y-6">
+                        <CodeBlock label="Input" language={challenge.example.language} code={challenge.example.input} />
+                        <CodeBlock label="Output" language={challenge.example.language} code={challenge.example.output} />
+                    </div>
+                </section>
+            {/if}
 
-            <hr class="border-base-200 my-8" />
+            {#if challenge.constraints.length > 0}
+                <hr class="border-base-200 my-8" />
 
-            <section>
-                <h2 class="text-xl font-bold">Einschränkungen</h2>
-                <ul class="text-base-content/80 mt-4 list-disc space-y-2 pl-6">
-                    {#each challenge.constraints as constraint (constraint)}
-                        <li>{constraint}</li>
-                    {/each}
-                </ul>
-            </section>
+                <section>
+                    <h2 class="text-xl font-bold">Einschränkungen</h2>
+                    <ul class="text-base-content/80 mt-4 list-disc space-y-2 pl-6">
+                        {#each challenge.constraints as constraint (constraint)}
+                            <li>{constraint}</li>
+                        {/each}
+                    </ul>
+                </section>
+            {/if}
 
             <button type="button" class="btn btn-primary mt-10 h-14 w-full rounded-full text-lg" onclick={() => (submitOpen = true)}>
                 Einreichen

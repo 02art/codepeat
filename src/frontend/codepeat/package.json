@@ -11,8 +11,13 @@
     "watch:src": "node ../../../bin/frontend/watch.js",
     "watch": "npm run build:tailwind && conc -n tailwind,src -c auto \"npm run watch:tailwind\" \"npm run watch:src\"",
     "build:tailwind": "tailwindcss -i tailwind.css -o src/tailwind.css",
+    "build:api-client": "openapi-generator-cli generate -i http://localhost:8000/api/schema/ -g typescript-fetch -o ./src/api-client/",
+    "build:auth-client": "openapi-generator-cli generate -i http://localhost:8000/auth-api/openapi.json -g typescript-fetch -o ./src/auth-client/",
+    "build:avatars": "node scripts/gen-avatar-manifest.mjs",
+    "prebuild:src": "npm run build:avatars",
+    "prewatch:src": "npm run build:avatars",
     "build:src": "node ../../../bin/frontend/build.js",
-    "build": "npm run build:tailwind && npm run build:src",
+    "build": "npm run build:tailwind && npm run build:api-client && npm run build:auth-client && npm run build:src",
     "lint": "eslint \"./**/*.{ts,tsx}\"",
     "lintfix": "eslint --fix \"./**/*.{ts,tsx}\"",
     "prettier": "prettier --ignore-path ../../.gitignore \"**/*.+(ts|tsx)\"",
@@ -20,6 +25,7 @@
     "check": "npm run lint && tsc"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.31.1",
     "@tailwindcss/cli": "^4.2.4",
     "daisyui": "^5.5.19",
     "serve": "^14.2.4",

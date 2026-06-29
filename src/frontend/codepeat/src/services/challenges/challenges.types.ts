@@ -12,20 +12,28 @@ export interface Challenge {
     favorited: boolean;
     /** Whether the *current* user has solved it — per-user, set by the service. */
     solved: boolean;
-    /** Id of the user who created this challenge. */
     createdBy: string;
-    /** Topic categories this challenge belongs to (e.g. "Arrays"). */
     categories: string[];
-    /** Whether the challenge is featured as popular. */
     popular: boolean;
-    /** Whether the challenge was added recently. */
     isNew: boolean;
-    /** Whether the challenge was assigned to the current user. */
     assigned: boolean;
-    /** ISO date (YYYY-MM-DD) the challenge was created — used for "newest first". */
+    /** ISO date (YYYY-MM-DD); drives "newest first" sorting. */
     createdAt: string;
-    /** How many users have solved it — used for "most popular first". */
     solvedCount: number;
+}
+
+/** Editable challenge data used by the challenge editor (raw, unsplit text fields). */
+export interface ChallengeDraft {
+    title: string;
+    /** Task description, one requirement per line. */
+    description: string;
+    /** Constraints, one per line. */
+    constraints: string;
+    exampleLanguage: string;
+    exampleInput: string;
+    exampleOutput: string;
+    difficulty: Difficulty;
+    visibility: "public" | "private";
 }
 
 /** Worked example shown on the detail page. */
@@ -48,12 +56,10 @@ export interface ChallengeCreator {
  * content the overview does not need.
  */
 export interface ChallengeDetail extends Challenge {
-    /** How many times the challenge has been viewed. */
     views: number;
-    /** Task description, one entry per bullet point. */
+    /** Description and constraints split into bullet points (raw form lives on ChallengeDraft). */
     tasks: string[];
-    /** Constraints, one entry per bullet point. */
     constraints: string[];
-    example: ChallengeExample;
+    example: ChallengeExample | null;
     creator: ChallengeCreator;
 }

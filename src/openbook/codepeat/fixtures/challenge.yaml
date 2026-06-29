@@ -1,38 +1,509 @@
+# Demo challenge catalogue — classic, real-world coding problems (LeetCode-style).
+# All are created by the system (created_by: null) and therefore shown as official
+# "CodePeat" challenges in the frontend. PKs ...01 and ...02 are kept stable because
+# submission.yaml (and its dependent fixtures) reference them.
+#
+# `description` lines become the task bullets, `constraints` lines the constraint
+# bullets, and example_language/input/output the worked example on the detail page.
+
 - model: codepeat.challenge
-  pk: 11111111-1111-1111-1111-111111111111
+  pk: 00000000-0000-4000-8000-000000000001
   fields:
     name: "FizzBuzz"
-    description: "Implement FizzBuzz for numbers 1–100."
     text_format: "MD"
     difficulty: easy
     visibility: public
     type: solo
     course: null
     created_by: null
+    created_at: "2025-01-05T09:00:00Z"
     modified_by: null
+    views: 1240
+    example_language: "Java"
+    example_input: 'n = 15'
+    example_output: '1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz'
+    constraints: |-
+      1 <= n <= 100
+      Gib für jede Zahl genau eine Ausgabe aus.
+    description: |-
+      Gib die Zahlen von 1 bis 100 aus und ersetze dabei bestimmte Vielfache durch Wörter.
+      Gib für Vielfache von 3 „Fizz“ aus.
+      Gib für Vielfache von 5 „Buzz“ aus.
+      Gib für Vielfache von 3 und 5 „FizzBuzz“ aus.
+      Gib für alle übrigen Zahlen die Zahl selbst aus.
 
 - model: codepeat.challenge
-  pk: 22222222-2222-2222-2222-222222222222
+  pk: 00000000-0000-4000-8000-000000000002
   fields:
     name: "Binary Search"
-    description: "Implement binary search on a sorted list."
+    text_format: "MD"
+    difficulty: easy
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-01-08T09:00:00Z"
+    modified_by: null
+    views: 3060
+    example_language: "Java"
+    example_input: 'nums = [-1,0,3,5,9,12], target = 9'
+    example_output: '4'
+    constraints: |-
+      Das Array ist aufsteigend sortiert.
+      Erwartete Laufzeit: O(log n).
+    description: |-
+      Finde den Index eines Zielwerts in einem aufsteigend sortierten Array.
+      Halbiere den Suchbereich in jedem Schritt.
+      Gib den Index des Zielwerts zurück, falls er vorhanden ist.
+      Gib -1 zurück, wenn der Wert nicht enthalten ist.
+      Die Laufzeit muss in O(log n) liegen.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000003
+  fields:
+    name: "Two Sum"
+    text_format: "MD"
+    difficulty: easy
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-02-12T09:00:00Z"
+    modified_by: null
+    views: 2480
+    example_language: "Java"
+    example_input: 'nums = [2,7,11,15], target = 9'
+    example_output: '[0,1]'
+    constraints: |-
+      Es gibt genau eine gültige Lösung.
+      Dasselbe Element darf nicht doppelt verwendet werden.
+    description: |-
+      Finde in einem Array die beiden Zahlen, deren Summe einem Zielwert entspricht.
+      Gib die Indizes der beiden passenden Zahlen zurück.
+      Genau eine gültige Lösung ist garantiert.
+      Dasselbe Element darf nicht doppelt verwendet werden.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000004
+  fields:
+    name: "Palindrome Number"
+    text_format: "MD"
+    difficulty: easy
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-03-03T09:00:00Z"
+    modified_by: null
+    views: 880
+    example_language: "Java"
+    example_input: 'x = 121'
+    example_output: 'true'
+    constraints: |-
+      -2^31 <= x <= 2^31 - 1
+      Negative Zahlen sind keine Palindrome.
+    description: |-
+      Prüfe, ob eine ganze Zahl ein Palindrom ist.
+      Eine Zahl ist ein Palindrom, wenn sie vorwärts wie rückwärts gleich gelesen wird.
+      Gib true zurück, wenn die Zahl ein Palindrom ist, sonst false.
+      Löse die Aufgabe ohne die Zahl in eine Zeichenkette umzuwandeln.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000005
+  fields:
+    name: "Valid Parentheses"
+    text_format: "MD"
+    difficulty: easy
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-03-20T09:00:00Z"
+    modified_by: null
+    views: 1960
+    example_language: "Java"
+    example_input: 's = "([]{})"'
+    example_output: 'true'
+    constraints: |-
+      Die Eingabe enthält ausschließlich Klammerzeichen.
+      Eine leere Zeichenkette gilt als gültig.
+    description: |-
+      Prüfe, ob eine Zeichenkette aus Klammern korrekt geschlossen ist.
+      Erlaubt sind die Klammern (), [] und {}.
+      Jede öffnende Klammer muss durch die passende schließende Klammer beendet werden.
+      Die Klammern müssen in der richtigen Reihenfolge geschlossen werden.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000006
+  fields:
+    name: "Best Time to Buy and Sell Stock"
+    text_format: "MD"
+    difficulty: easy
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-04-15T09:00:00Z"
+    modified_by: null
+    views: 1980
+    example_language: "Java"
+    example_input: 'prices = [7,1,5,3,6,4]'
+    example_output: '5'
+    constraints: |-
+      Du darfst nur einmal kaufen und verkaufen.
+      Gibt es keinen Gewinn, ist das Ergebnis 0.
+    description: |-
+      Bestimme den maximal möglichen Gewinn aus einem einzigen Kauf und Verkauf.
+      Gegeben ist ein Array mit den Tagespreisen einer Aktie.
+      Du musst zuerst kaufen und an einem späteren Tag verkaufen.
+      Gib 0 zurück, wenn kein Gewinn möglich ist.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000007
+  fields:
+    name: "Valid Anagram"
+    text_format: "MD"
+    difficulty: easy
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-05-06T09:00:00Z"
+    modified_by: null
+    views: 1450
+    example_language: "Java"
+    example_input: 's = "anagram", t = "nagaram"'
+    example_output: 'true'
+    constraints: |-
+      1 <= s.length, t.length <= 50000
+      Die Strings bestehen aus Kleinbuchstaben.
+    description: |-
+      Prüfe, ob zwei Zeichenketten Anagramme voneinander sind.
+      Zwei Wörter sind Anagramme, wenn sie dieselben Buchstaben in gleicher Anzahl enthalten.
+      Groß- und Kleinschreibung wird wie angegeben berücksichtigt.
+      Gib true zurück, wenn es ein Anagramm ist, sonst false.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000008
+  fields:
+    name: "Add Two Numbers"
     text_format: "MD"
     difficulty: medium
     visibility: public
     type: solo
     course: null
     created_by: null
+    created_at: "2025-06-11T09:00:00Z"
     modified_by: null
+    views: 1670
+    example_language: "Java"
+    example_input: 'l1 = [2,4,3], l2 = [5,6,4]'
+    example_output: '[7,0,8]'
+    constraints: |-
+      Jeder Knoten enthält genau eine Ziffer.
+      Die Ziffern liegen in umgekehrter Reihenfolge vor.
+    description: |-
+      Addiere zwei Zahlen, die als verkettete Listen in umgekehrter Ziffernreihenfolge vorliegen.
+      Jeder Knoten enthält genau eine Ziffer.
+      Gib das Ergebnis ebenfalls als verkettete Liste in umgekehrter Reihenfolge zurück.
+      Berücksichtige den Übertrag zwischen den Stellen.
 
 - model: codepeat.challenge
-  pk: 33333333-3333-3333-3333-333333333333
+  pk: 00000000-0000-4000-8000-000000000009
   fields:
-    name: "Group Sorting Algorithm"
-    description: "Implement and benchmark three sorting algorithms as a group."
+    name: "Longest Substring Without Repeating Characters"
     text_format: "MD"
-    difficulty: hard
-    visibility: private
-    type: group
+    difficulty: medium
+    visibility: public
+    type: solo
     course: null
     created_by: null
+    created_at: "2025-07-22T09:00:00Z"
     modified_by: null
+    views: 2110
+    example_language: "Java"
+    example_input: 's = "abcabcbb"'
+    example_output: '3'
+    constraints: |-
+      0 <= s.length <= 50000
+      Erwartete Laufzeit: O(n).
+    description: |-
+      Finde die Länge der längsten Teilzeichenkette ohne wiederholte Zeichen.
+      Eine Teilzeichenkette ist ein zusammenhängender Abschnitt der Eingabe.
+      Gib die Länge dieses längsten Abschnitts zurück.
+      Nutze ein gleitendes Fenster für eine effiziente Lösung.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-00000000000a
+  fields:
+    name: "Group Anagrams"
+    text_format: "MD"
+    difficulty: medium
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-08-18T09:00:00Z"
+    modified_by: null
+    views: 980
+    example_language: "Java"
+    example_input: 'strs = ["eat","tea","tan","ate","nat","bat"]'
+    example_output: '[["bat"],["nat","tan"],["ate","eat","tea"]]'
+    constraints: |-
+      1 <= strs.length <= 10000
+      Die Reihenfolge der Gruppen ist beliebig.
+    description: |-
+      Gruppiere eine Liste von Wörtern nach ihren Anagrammen.
+      Wörter gehören zur selben Gruppe, wenn sie aus denselben Buchstaben bestehen.
+      Gib eine Liste der Gruppen zurück.
+      Die Reihenfolge der Gruppen ist beliebig.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-00000000000b
+  fields:
+    name: "Product of Array Except Self"
+    text_format: "MD"
+    difficulty: medium
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-09-09T09:00:00Z"
+    modified_by: null
+    views: 1080
+    example_language: "Java"
+    example_input: 'nums = [1,2,3,4]'
+    example_output: '[24,12,8,6]'
+    constraints: |-
+      Löse die Aufgabe ohne Division.
+      Erwartete Laufzeit: O(n).
+    description: |-
+      Berechne für jedes Element das Produkt aller anderen Elemente des Arrays.
+      Das Ergebnis an Position i ist das Produkt aller Zahlen außer der an Position i.
+      Löse die Aufgabe ohne Division.
+      Die Laufzeit muss in O(n) liegen.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-00000000000c
+  fields:
+    name: "3Sum"
+    text_format: "MD"
+    difficulty: medium
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-10-14T09:00:00Z"
+    modified_by: null
+    views: 1320
+    example_language: "Java"
+    example_input: 'nums = [-1,0,1,2,-1,-4]'
+    example_output: '[[-1,-1,2],[-1,0,1]]'
+    constraints: |-
+      Die Lösung darf keine doppelten Tripel enthalten.
+      3 <= nums.length <= 3000
+    description: |-
+      Finde alle eindeutigen Tripel im Array, deren Summe null ergibt.
+      Ein Tripel besteht aus drei verschiedenen Positionen im Array.
+      Die Lösung darf keine doppelten Tripel enthalten.
+      Die Reihenfolge der Tripel ist beliebig.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-00000000000d
+  fields:
+    name: "Coin Change"
+    text_format: "MD"
+    difficulty: medium
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-11-05T09:00:00Z"
+    modified_by: null
+    views: 1510
+    example_language: "Java"
+    example_input: 'coins = [1,2,5], amount = 11'
+    example_output: '3'
+    constraints: |-
+      Jeder Münzwert darf beliebig oft verwendet werden.
+      Ist der Betrag nicht bildbar, ist das Ergebnis -1.
+    description: |-
+      Bestimme die kleinste Anzahl an Münzen, um einen Betrag zu bilden.
+      Gegeben sind die verfügbaren Münzwerte und ein Zielbetrag.
+      Jeder Münzwert darf beliebig oft verwendet werden.
+      Gib -1 zurück, wenn der Betrag nicht gebildet werden kann.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-00000000000e
+  fields:
+    name: "Number of Islands"
+    text_format: "MD"
+    difficulty: medium
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2025-12-10T09:00:00Z"
+    modified_by: null
+    views: 960
+    example_language: "Java"
+    example_input: 'grid = [["1","1","0"],["0","1","0"],["0","0","1"]]'
+    example_output: '2'
+    constraints: |-
+      Felder sind „0“ (Wasser) oder „1“ (Land).
+      Benachbarungen zählen nur horizontal und vertikal.
+    description: |-
+      Zähle die Anzahl der Inseln in einem Raster aus Land und Wasser.
+      Das Raster besteht aus den Werten „1“ (Land) und „0“ (Wasser).
+      Eine Insel besteht aus benachbarten Landfeldern (horizontal oder vertikal).
+      Der Rand des Rasters gilt als von Wasser umgeben.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-00000000000f
+  fields:
+    name: "Container With Most Water"
+    text_format: "MD"
+    difficulty: medium
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2026-01-19T09:00:00Z"
+    modified_by: null
+    views: 870
+    example_language: "Java"
+    example_input: 'height = [1,8,6,2,5,4,8,3,7]'
+    example_output: '49'
+    constraints: |-
+      2 <= height.length <= 100000
+      Erwartete Laufzeit: O(n).
+    description: |-
+      Finde die beiden Linien, die zusammen mit der x-Achse das meiste Wasser fassen.
+      Gegeben ist ein Array von Höhen, das senkrechte Linien beschreibt.
+      Das Fassungsvermögen ergibt sich aus Abstand mal kleinerer Höhe.
+      Gib das maximal mögliche Fassungsvermögen zurück.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000010
+  fields:
+    name: "Merge Intervals"
+    text_format: "MD"
+    difficulty: medium
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2026-02-23T09:00:00Z"
+    modified_by: null
+    views: 760
+    example_language: "Java"
+    example_input: 'intervals = [[1,3],[2,6],[8,10],[15,18]]'
+    example_output: '[[1,6],[8,10],[15,18]]'
+    constraints: |-
+      1 <= intervals.length <= 10000
+      Aneinandergrenzende Intervalle werden vereint.
+    description: |-
+      Fasse alle überlappenden Intervalle zu möglichst wenigen Intervallen zusammen.
+      Gegeben ist eine Liste von Intervallen mit Start- und Endwert.
+      Überlappende oder aneinandergrenzende Intervalle werden vereint.
+      Gib die Liste der zusammengefassten Intervalle zurück.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000011
+  fields:
+    name: "Median of Two Sorted Arrays"
+    text_format: "MD"
+    difficulty: hard
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2026-03-17T09:00:00Z"
+    modified_by: null
+    views: 690
+    example_language: "Java"
+    example_input: 'nums1 = [1,3], nums2 = [2]'
+    example_output: '2.0'
+    constraints: |-
+      Erwartete Laufzeit: O(log (m+n)).
+      0 <= m + n <= 2000
+    description: |-
+      Bestimme den Median zweier aufsteigend sortierter Arrays.
+      Der Median ist der mittlere Wert aller Zahlen beider Arrays zusammen.
+      Bei gerader Gesamtanzahl ist es der Durchschnitt der beiden mittleren Werte.
+      Die Laufzeit muss in O(log (m+n)) liegen.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000012
+  fields:
+    name: "Trapping Rain Water"
+    text_format: "MD"
+    difficulty: hard
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2026-04-21T09:00:00Z"
+    modified_by: null
+    views: 1190
+    example_language: "Java"
+    example_input: 'height = [0,1,0,2,1,0,1,3,2,1,2,1]'
+    example_output: '6'
+    constraints: |-
+      0 <= height.length <= 20000
+      0 <= height[i] <= 100000
+    description: |-
+      Berechne, wie viel Regenwasser zwischen den Balken eines Höhenprofils gespeichert wird.
+      Gegeben ist ein Array, das die Höhen nebeneinanderstehender Balken angibt.
+      Über jeder Position wird Wasser bis zur kleineren der beiden umgebenden Maximalhöhen gespeichert.
+      Gib die gesamte gespeicherte Wassermenge zurück.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000013
+  fields:
+    name: "Merge k Sorted Lists"
+    text_format: "MD"
+    difficulty: hard
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2026-06-08T09:00:00Z"
+    modified_by: null
+    views: 540
+    example_language: "Java"
+    example_input: 'lists = [[1,4,5],[1,3,4],[2,6]]'
+    example_output: '[1,1,2,3,4,4,5,6]'
+    constraints: |-
+      0 <= k <= 10000
+      Die Gesamtzahl der Knoten ist höchstens 10000.
+    description: |-
+      Führe k aufsteigend sortierte verkettete Listen zu einer sortierten Liste zusammen.
+      Gegeben ist ein Array von Listenköpfen.
+      Das Ergebnis muss alle Elemente in aufsteigender Reihenfolge enthalten.
+      Gib den Kopf der zusammengeführten Liste zurück.
+
+- model: codepeat.challenge
+  pk: 00000000-0000-4000-8000-000000000014
+  fields:
+    name: "Word Ladder"
+    text_format: "MD"
+    difficulty: hard
+    visibility: public
+    type: solo
+    course: null
+    created_by: null
+    created_at: "2026-06-20T09:00:00Z"
+    modified_by: null
+    views: 480
+    example_language: "Java"
+    example_input: 'beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]'
+    example_output: '5'
+    constraints: |-
+      Pro Schritt darf genau ein Buchstabe geändert werden.
+      Existiert keine gültige Kette, ist das Ergebnis 0.
+    description: |-
+      Finde die Länge der kürzesten Umwandlungskette zwischen zwei Wörtern.
+      In jedem Schritt darf genau ein Buchstabe geändert werden.
+      Jedes Zwischenwort muss in der gegebenen Wortliste enthalten sein.
+      Gib 0 zurück, wenn keine gültige Kette existiert.

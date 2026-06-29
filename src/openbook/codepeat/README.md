@@ -19,19 +19,24 @@ Challenge
 ### Challenge
 A programming task created by a lecturer or admin.
 
-| Field        | Type     | Description                                      |
-|--------------|----------|--------------------------------------------------|
-| `id`         | UUID     | Primary key                                      |
-| `name`       | string   | Short title                                      |
-| `description`| string   | Task description (plain text, HTML, or Markdown) |
-| `text_format`| enum     | `TEXT`, `HTML`, `MD`                             |
-| `difficulty` | enum     | `easy`, `medium`, `hard`                         |
-| `visibility` | enum     | `public`, `private`                              |
-| `type`       | enum     | `solo`, `group`                                  |
-| `course`     | FK       | Optional link to a Course                        |
-| `created_by` | FK(User) | Set automatically                                |
-| `created_at` | datetime | Set automatically                                |
-| `modified_at`| datetime | Set automatically                                |
+| Field              | Type     | Description                                         |
+|--------------------|----------|-----------------------------------------------------|
+| `id`               | UUID     | Primary key                                         |
+| `name`             | string   | Short title                                         |
+| `description`      | string   | Task description (plain text, HTML, or Markdown)    |
+| `text_format`      | enum     | `TEXT`, `HTML`, `MD`                                |
+| `difficulty`       | enum     | `easy`, `medium`, `hard`                            |
+| `visibility`       | enum     | `public`, `private`                                 |
+| `type`             | enum     | `solo`, `group`                                     |
+| `constraints`      | string   | Detail-page constraints, one per line               |
+| `example_language` | string   | Language label for the worked example (e.g. `Java`) |
+| `example_input`    | string   | Worked example input                                |
+| `example_output`   | string   | Worked example output                               |
+| `views`            | int      | View counter (read-only via the API)                |
+| `course`           | FK       | Optional link to a Course                           |
+| `created_by`       | FK(User) | Set automatically                                   |
+| `created_at`       | datetime | Set automatically                                   |
+| `modified_at`      | datetime | Set automatically                                   |
 
 ### Submission
 A student's solution upload for a challenge.
@@ -74,6 +79,32 @@ A student's self-reflection on their submission (one per submission).
 | `submission` | FK   | The submission being reflected on    |
 | `answers`    | JSON | Free-form reflection answers         |
 
+### ChallengeAccess
+A permanent unlock of a private challenge for one user (created when an invite link is opened).
+
+| Field        | Type     | Description                          |
+|--------------|----------|--------------------------------------|
+| `id`         | UUID     | Primary key                          |
+| `challenge`  | FK       | The unlocked challenge               |
+| `user`       | FK(User) | The user who gained access           |
+| `created_at` | datetime | When access was granted              |
+
+### ReflectionQuestion
+A reflection question a challenge creator attaches (from the catalogue or custom-authored).
+
+| Field       | Type | Description                                                            |
+|-------------|------|-----------------------------------------------------------------------|
+| `id`        | UUID | Primary key                                                           |
+| `challenge` | FK   | The challenge the question belongs to                                 |
+| `text`      | str  | The question text                                                     |
+| `kind`      | enum | `text`, `scale`, `choice`                                             |
+| `options`   | JSON | `choice` → option list; `scale` → `[min_label, max_label]`; else `[]` |
+| `position`  | int  | Display order                                                         |
+
+CodePeat (system/admin) challenges additionally show up to three default questions at fill-in
+time; these are provided by the frontend and not stored per challenge. Student answers are saved
+on the existing `Reflection` (one per submission) as a self-describing JSON array.
+
 ---
 
 ## REST API
@@ -96,15 +127,28 @@ All endpoints require authentication. Use session auth (cookie) or token auth.
 
 ### Challenges `/api/codepeat/challenges/`
 
-| Method | URL                              | Permission          | Description        |
-|--------|----------------------------------|---------------------|--------------------|
-| GET    | `/api/codepeat/challenges/`      | Authenticated       | List challenges    |
-| GET    | `/api/codepeat/challenges/{id}/` | Authenticated       | Get challenge      |
-| POST   | `/api/codepeat/challenges/`      | Admin / Lecturer    | Create challenge   |
-| PUT    | `/api/codepeat/challenges/{id}/` | Admin / Lecturer    | Update challenge   |
-| PATCH  | `/api/codepeat/challenges/{id}/` | Admin / Lecturer    | Partial update     |
+| Method | URL                                          | Permission          | Description                    |
+|--------|----------------------------------------------|---------------------|--------------------------------|
+| GET    | `/api/codepeat/challenges/`                  | Public              | List challenges                |
+| GET    | `/api/codepeat/challenges/{id}/`             | Public              | Get challenge                  |
+| POST   | `/api/codepeat/challenges/`                  | Admin / Teacher     | Create challenge               |
+| PUT    | `/api/codepeat/challenges/{id}/`             | Creator / Admin     | Update challenge               |
+| PATCH  | `/api/codepeat/challenges/{id}/`             | Creator / Admin     | Partial update                 |
+| DELETE | `/api/codepeat/challenges/{id}/`             | Creator / Admin     | Delete challenge               |
+| POST   | `/api/codepeat/challenges/{id}/invite-link/` | Creator / Admin     | Create a 30-min invite link    |
+| POST   | `/api/codepeat/challenges/unlock/`           | Authenticated       | Redeem an invite link          |
 
 Filter parameters: `difficulty`, `visibility`, `type`, `course`, `created_by`
+
+**Visibility.** Public challenges are listed for everyone. `private` challenges are only visible to
+their creator, to staff, and to users who have opened a valid invite link (a permanent
+`ChallengeAccess` grant). Editing/deleting is restricted to the creator (or staff) on top of the
+`change_challenge` / `delete_challenge` group permissions.
+
+**Invite links.** `invite-link` returns a signed, 30-minute URL (`…/#/challenges/{id}/unlock/{token}`);
+call it again to refresh. `unlock` validates the token and grants the signed-in user permanent access.
+Switching a challenge back to `public` clears all existing grants, so a later switch to `private`
+starts with no unlocked users.
 
 ### Submissions `/api/codepeat/submissions/`
 
@@ -122,9 +166,9 @@ Filter parameters: `challenge`, `user`, `submitted_at`
 |--------|---------------------------------|------------------|-----------------|
 | GET    | `/api/codepeat/feedbacks/`      | Authenticated    | List feedback   |
 | GET    | `/api/codepeat/feedbacks/{id}/` | Authenticated    | Get feedback    |
-| POST   | `/api/codepeat/feedbacks/`      | Admin / Lecturer | Create feedback |
-| PUT    | `/api/codepeat/feedbacks/{id}/` | Admin / Lecturer | Update feedback |
-| PATCH  | `/api/codepeat/feedbacks/{id}/` | Admin / Lecturer | Partial update  |
+| POST   | `/api/codepeat/feedbacks/`      | Admin / Teacher  | Create feedback |
+| PUT    | `/api/codepeat/feedbacks/{id}/` | Admin / Teacher  | Update feedback |
+| PATCH  | `/api/codepeat/feedbacks/{id}/` | Admin / Teacher  | Partial update  |
 
 Filter parameters: `submission`, `lecturer`, `rating`
 
@@ -274,28 +318,25 @@ python manage.py loaddata test_result
 
 ---
 
-## TODO: Groups & Permissions
+## Groups & Permissions
 
-> ⚠️ Not yet implemented. Permissions are not yet configured in Django Admin.
+CodePeat reuses OpenBook's platform-wide groups rather than defining its own roles.
 
-The following groups and permissions need to be created manually in the Django Admin
-under `Users → Groups`:
+**Group: `Teacher`** (provided by the openbook_auth fixtures)
 
-**Group: `Lecturer`**
-- `codepeat | challenge | Can add challenge`
-- `codepeat | challenge | Can change challenge`
-- `codepeat | feedback | Can add feedback`
-- `codepeat | feedback | Can change feedback`
+- Challenge permissions are attached automatically by migration
+  `0003_teacher_challenge_permissions`:
+  - `codepeat | challenge | Can add challenge`
+  - `codepeat | challenge | Can change challenge`
+- Members may create/edit challenges (this drives the "+" button on the challenge
+  overview, gated by the `challenges/can-create` endpoint).
 
-**Group: `Student`**
-- `codepeat | submission | Can add submission`
-- `codepeat | reflection | Can add reflection`
+To make someone a teacher, assign them to the `Teacher` group under
+`/admin/ → Auth → Users`.
 
-Steps:
-1. Go to `/admin/`
-2. Navigate to `Auth → Groups → Add Group`
-3. Create `Lecturer` and `Student` groups with the permissions above
-4. Assign users to the appropriate group under `Auth → Users`
+> Not yet auto-configured: feedback permissions (`add_feedback`, `change_feedback`)
+> and the `Student` submission/reflection permissions. Add these to the relevant
+> groups in the admin when those flows are wired up.
 
 ---
 

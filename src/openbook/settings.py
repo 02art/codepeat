@@ -280,6 +280,7 @@ ACCOUNT_ADAPTER = "openbook.auth.allauth.adapter.AccountAdapter"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 300
 ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_USERNAME_BLACKLIST = ["admin", "Administrator", "root", "superuser"]
 ACCOUNT_USERNAME_MIN_LENGTH = 5
@@ -292,7 +293,8 @@ HEADLESS_ONLY = False
 HEADLESS_ADAPTER = "allauth.headless.adapter.DefaultHeadlessAdapter"
 HEADLESS_SERVE_SPECIFICATION = True
 HEADLESS_FRONTEND_URLS = {
-    #"account_confirm_email": "https://app.project.org/account/verify-email/{key}",
+    # CodePeat single-page app (served by Django under /codepeat/). The {key} is filled in by allauth.
+    "account_confirm_email": "http://localhost:8000/codepeat/index.html#/verify-email/{key}",
     #"account_reset_password": "https://app.project.org/account/password/reset",
     #"account_reset_password_from_key": "https://app.project.org/account/password/reset/key/{key}",
     #"account_signup": "https://app.project.org/account/signup",
@@ -620,6 +622,7 @@ STATIC_ROOT = BASE_DIR / "_static"
 STATICFILES_DIRS = [
     BASE_DIR / "frontend" / "admin" / "dist",
     BASE_DIR / "frontend" / "app" / "dist",
+    BASE_DIR / "frontend" / "codepeat" / "dist",
 ]
 
 # Uploaded media files

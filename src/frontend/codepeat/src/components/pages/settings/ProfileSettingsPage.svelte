@@ -4,11 +4,12 @@ Profile settings: avatar, account details, password change and account deletion.
 Sensitive actions are confirmed by email and stay pending until confirmed.
 -->
 <script lang="ts">
-    import {changePassword, isAccountDeletionRequested, requestAccountDeletion} from "../../../services/auth/auth.service.js";
+    import {cancelAccountDeletion, changePassword, fetchDeletionStatus, requestAccountDeletion} from "../../../services/auth/auth.service.js";
     import {passwordError, PASSWORD_MIN_LENGTH} from "../../../services/auth/auth.validation.js";
     import {currentUser, setAvatar} from "../../../services/user/user.store.js";
     import AuthField from "../../basic/AuthField.svelte";
     import Icon from "../../basic/Icon.svelte";
+    import AvatarPickerModal from "./AvatarPickerModal.svelte";
     import ConfirmDialog from "./ConfirmDialog.svelte";
     import ConfirmationModal from "./ConfirmationModal.svelte";
 
@@ -22,11 +23,17 @@ Sensitive actions are confirmed by email and stay pending until confirmed.
     let passwordFormError = $state<string | null>(null);
     let submitting = $state(false);
 
-    let deletionPending = $state(isAccountDeletionRequested());
+    let deletionPending = $state(false);
+    let deletionBusy = $state(false);
     let deleteConfirmOpen = $state(false);
     let modalAction = $state<string | null>(null);
 
-    let fileInput = $state<HTMLInputElement | null>(null);
+    let avatarPickerOpen = $state(false);
+
+    // Persist the banner across reloads: the pending state lives on the server.
+    $effect(() => {
+        void fetchDeletionStatus().then((pending) => (deletionPending = pending));
+    });
 
     async function handleChangePassword(event: SubmitEvent): Promise<void> {
         event.preventDefault();
@@ -60,24 +67,60 @@ Sensitive actions are confirmed by email and stay pending until confirmed.
 
     async function confirmDeleteAccount(): Promise<void> {
         deleteConfirmOpen = false;
-        await requestAccountDeletion();
-        deletionPending = true;
-        modalAction = "Account-Löschung";
+        deletionBusy = true;
+        try {
+            await requestAccountDeletion();
+            deletionPending = true;
+            modalAction = "Account-Löschung";
+        } finally {
+            deletionBusy = false;
+        }
     }
 
-    function onAvatarSelected(event: Event): void {
-        const file = (event.currentTarget as HTMLInputElement).files?.[0];
-        if (file !== undefined) {
-            setAvatar(URL.createObjectURL(file));
+    async function resendDeletionEmail(): Promise<void> {
+        deletionBusy = true;
+        try {
+            await requestAccountDeletion();
+            modalAction = "Account-Löschung";
+        } finally {
+            deletionBusy = false;
+        }
+    }
+
+    async function cancelDeletion(): Promise<void> {
+        deletionBusy = true;
+        try {
+            await cancelAccountDeletion();
+            deletionPending = false;
+        } finally {
+            deletionBusy = false;
+        }
+    }
+
+    async function onAvatarChosen(avatar: string): Promise<void> {
+        try {
+            await setAvatar(avatar);
+        } catch {
+            // Keep the previous picture if saving failed.
         }
     }
 </script>
 
 <div class="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6">
     {#if deletionPending}
-        <div role="alert" class="bg-error/10 text-error mx-auto mb-8 flex max-w-4xl items-center justify-center gap-3 rounded-2xl px-6 py-4 text-center font-semibold">
-            <Icon name="no-symbol" class="size-5 shrink-0" />
-            Account Löschung ist Beantragt. Bestätige die Löschung per Email um zu Finalisieren!
+        <div role="alert" class="bg-error/10 text-error mx-auto mb-8 flex max-w-4xl flex-col items-center justify-center gap-3 rounded-2xl px-6 py-4 text-center font-semibold sm:flex-row">
+            <span class="flex items-center gap-3">
+                <Icon name="no-symbol" class="size-5 shrink-0" />
+                Account-Löschung ist beantragt. Bestätige sie über den Link in der E-Mail.
+            </span>
+            <button
+                type="button"
+                class="btn btn-sm btn-outline btn-error shrink-0 rounded-full"
+                disabled={deletionBusy}
+                onclick={resendDeletionEmail}
+            >
+                E-Mail erneut senden
+            </button>
         </div>
     {/if}
 
@@ -103,11 +146,10 @@ Sensitive actions are confirmed by email and stay pending until confirmed.
                         type="button"
                         class="bg-base-100 ring-base-300 text-base-content/70 hover:text-base-content absolute right-0 bottom-1 flex size-9 items-center justify-center rounded-full shadow ring-1 transition-colors"
                         aria-label="Profilbild ändern"
-                        onclick={() => fileInput?.click()}
+                        onclick={() => (avatarPickerOpen = true)}
                     >
                         <Icon name="edit" class="size-4" />
                     </button>
-                    <input bind:this={fileInput} type="file" accept="image/*" class="hidden" onchange={onAvatarSelected} />
                 </div>
 
                 <dl class="flex flex-col gap-4">
@@ -125,14 +167,25 @@ Sensitive actions are confirmed by email and stay pending until confirmed.
                     </div>
                 </dl>
 
-                <button
-                    type="button"
-                    class="text-primary hover:text-primary/80 disabled:text-base-content/40 flex w-fit items-center gap-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed"
-                    disabled={deletionPending}
-                    onclick={() => (deleteConfirmOpen = true)}
-                >
-                    <Icon name="trash" class="size-5" /> Account Löschen
-                </button>
+                {#if deletionPending}
+                    <button
+                        type="button"
+                        class="text-base-content/70 hover:text-base-content disabled:text-base-content/40 flex w-fit items-center gap-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed"
+                        disabled={deletionBusy}
+                        onclick={cancelDeletion}
+                    >
+                        <Icon name="close" class="size-5" /> Löschung abbrechen
+                    </button>
+                {:else}
+                    <button
+                        type="button"
+                        class="text-primary hover:text-primary/80 disabled:text-base-content/40 flex w-fit items-center gap-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed"
+                        disabled={deletionBusy}
+                        onclick={() => (deleteConfirmOpen = true)}
+                    >
+                        <Icon name="trash" class="size-5" /> Account Löschen
+                    </button>
+                {/if}
             </div>
         </section>
 
@@ -173,3 +226,10 @@ Sensitive actions are confirmed by email and stay pending until confirmed.
 />
 
 <ConfirmationModal open={modalAction !== null} action={modalAction ?? ""} onClose={() => (modalAction = null)} />
+
+<AvatarPickerModal
+    open={avatarPickerOpen}
+    current={avatarUrl}
+    onSelect={onAvatarChosen}
+    onClose={() => (avatarPickerOpen = false)}
+/>
