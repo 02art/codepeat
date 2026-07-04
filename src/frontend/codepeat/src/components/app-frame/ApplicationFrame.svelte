@@ -30,11 +30,17 @@ pages, which bring their own standalone layout.
         return () => window.removeEventListener("hashchange", onHashChange);
     });
 
-    const bareLayout = $derived(path.startsWith("/register") || path.startsWith("/login"));
+    const bareLayout = $derived(
+        path.startsWith("/register") ||
+            path.startsWith("/login") ||
+            path.startsWith("/forgot-password") ||
+            path.startsWith("/reset-password"),
+    );
     // The reflection questionnaire is a focused flow: hide the navbar (but keep the footer).
     const isReflection = $derived(path.endsWith("/reflection"));
     const coursesActive = $derived(path.startsWith("/courses"));
     const challengesActive = $derived(path.startsWith("/challenges"));
+    const activitiesActive = $derived(path.startsWith("/activities"));
 
     // The route to redirect to for the current path + auth state, or null when allowed here.
     const redirect = $derived($sessionReady ? guardRedirect(path, $currentUser !== null) : null);
@@ -64,7 +70,9 @@ pages, which bring their own standalone layout.
             p === "/datenschutz" ||
             p.startsWith("/verify-email") ||
             p.startsWith("/delete-account") ||
-            p.startsWith("/change-password")
+            p.startsWith("/change-password") ||
+            p.startsWith("/forgot-password") ||
+            p.startsWith("/reset-password")
         );
     }
 
@@ -134,6 +142,20 @@ pages, which bring their own standalone layout.
                         </span>
                         <span class="text-sm font-bold {challengesActive ? 'text-primary' : ''}">Challenges</span>
                     </a>
+                    {#if isAuthenticated}
+                        <a
+                            href="#/activities"
+                            aria-current={activitiesActive ? "page" : undefined}
+                            class="flex items-center gap-2.5 rounded-full border py-1.5 pr-5 pl-1.5 shadow-sm transition-colors {activitiesActive
+                                ? 'border-primary bg-primary/5'
+                                : 'border-transparent bg-base-100 hover:border-base-300'}"
+                        >
+                            <span class="flex size-9 items-center justify-center rounded-full transition-colors {activitiesActive ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content'}">
+                                <Icon name="inbox" />
+                            </span>
+                            <span class="text-sm font-bold {activitiesActive ? 'text-primary' : ''}">Aktivitäten</span>
+                        </a>
+                    {/if}
                 </nav>
 
                 <div class="flex shrink-0 items-center gap-3 md:gap-5">
@@ -202,6 +224,13 @@ pages, which bring their own standalone layout.
                                     <Icon name="bug" /> Challenges
                                 </a>
                             </li>
+                            {#if isAuthenticated}
+                                <li>
+                                    <a href="#/activities" aria-current={activitiesActive ? "page" : undefined} class:menu-active={activitiesActive}>
+                                        <Icon name="inbox" /> Aktivitäten
+                                    </a>
+                                </li>
+                            {/if}
                             <li><div class="divider my-0"></div></li>
                             {#if isAuthenticated}
                                 <li><a href="#/settings">Profileinstellungen</a></li>

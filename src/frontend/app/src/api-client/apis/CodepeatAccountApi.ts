@@ -22,6 +22,7 @@ import type {
   Avatar,
   PasswordChangeConfirm,
   PasswordChangeRequest,
+  UserProgress,
 } from '../models/index';
 import {
     AccountActionResultFromJSON,
@@ -38,6 +39,8 @@ import {
     PasswordChangeConfirmToJSON,
     PasswordChangeRequestFromJSON,
     PasswordChangeRequestToJSON,
+    UserProgressFromJSON,
+    UserProgressToJSON,
 } from '../models/index';
 
 export interface CodepeatAccountConfirmDeletionCreateRequest {
@@ -238,6 +241,38 @@ export class CodepeatAccountApi extends runtime.BaseAPI {
      */
     async codepeatAccountDeletionStatusRetrieve(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AccountDeletionStatus> {
         const response = await this.codepeatAccountDeletionStatusRetrieveRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * The signed-in user\'s XP and level (drives the navbar progress bar).
+     * Retrieve
+     */
+    async codepeatAccountProgressRetrieveRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserProgress>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/codepeat/account/progress/`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserProgressFromJSON(jsonValue));
+    }
+
+    /**
+     * The signed-in user\'s XP and level (drives the navbar progress bar).
+     * Retrieve
+     */
+    async codepeatAccountProgressRetrieve(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserProgress> {
+        const response = await this.codepeatAccountProgressRetrieveRaw(initOverrides);
         return await response.value();
     }
 

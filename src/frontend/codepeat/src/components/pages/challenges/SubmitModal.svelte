@@ -1,23 +1,21 @@
 <!--
 @component
-Source-code upload dialog (zip via drag & drop or file picker). The upload itself
-is simulated (the file is not stored); the submission record is created by the caller.
+Source-code upload dialog (zip via drag & drop or file picker). The chosen file is handed to
+the caller on submit, which performs the real upload; a spinner shows while it is in flight.
 -->
 <script lang="ts">
     import Icon from "../../basic/Icon.svelte";
     import Modal from "../../basic/Modal.svelte";
 
-    let {open, onClose, onSubmit}: {open: boolean; onClose: () => void; onSubmit: () => void} = $props();
+    let {open, onClose, onSubmit}: {open: boolean; onClose: () => void; onSubmit: (file: File) => Promise<void> | void} = $props();
 
     let fileInput = $state<HTMLInputElement | null>(null);
     let file = $state<File | null>(null);
-    let progress = $state(0);
     let dragOver = $state(false);
+    let submitting = $state(false);
+    let error = $state<string | null>(null);
 
-    let uploadHandle: ReturnType<typeof setInterval> | undefined;
-
-    const sizeLabel = $derived(file ? `${(file.size / (1024 * 1024)).toFixed(0)}MB` : "");
-    const remainingLabel = $derived(progress >= 100 ? "Fertig" : `${Math.ceil((100 - progress) / 20)} Sekunden übrig`);
+    const sizeLabel = $derived(file ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : "");
 
     $effect(() => {
         if (!open) {
@@ -25,13 +23,11 @@ is simulated (the file is not stored); the submission record is created by the c
         }
     });
 
-    $effect(() => () => clearInterval(uploadHandle));
-
     function reset(): void {
-        clearInterval(uploadHandle);
         file = null;
-        progress = 0;
         dragOver = false;
+        submitting = false;
+        error = null;
         if (fileInput !== null) {
             fileInput.value = "";
         }
@@ -39,14 +35,6 @@ is simulated (the file is not stored); the submission record is created by the c
 
     function selectFile(selected: File): void {
         file = selected;
-        progress = 0;
-        clearInterval(uploadHandle);
-        uploadHandle = setInterval(() => {
-            progress = Math.min(100, progress + 5);
-            if (progress >= 100) {
-                clearInterval(uploadHandle);
-            }
-        }, 200);
     }
 
     function onPick(event: Event): void {
@@ -68,6 +56,21 @@ is simulated (the file is not stored); the submission record is created by the c
     function onDragOver(event: DragEvent): void {
         event.preventDefault();
         dragOver = true;
+    }
+
+    async function submit(): Promise<void> {
+        if (file === null) {
+            return;
+        }
+        submitting = true;
+        error = null;
+        try {
+            await onSubmit(file);
+        } catch (cause) {
+            error = cause instanceof Error ? cause.message : "Der Upload ist fehlgeschlagen.";
+        } finally {
+            submitting = false;
+        }
     }
 </script>
 
@@ -91,27 +94,14 @@ is simulated (the file is not stored); the submission record is created by the c
     <input bind:this={fileInput} type="file" accept=".zip,application/zip" class="hidden" onchange={onPick} />
 
     {#if file}
-        <div class="bg-base-200/60 mt-4 rounded-xl p-3">
-            <div class="flex items-center justify-between gap-3">
-                <span class="truncate font-semibold">{file.name}</span>
-                <button type="button" class="text-base-content/40 hover:text-base-content transition-colors" aria-label="Datei entfernen" onclick={reset}>
-                    <Icon name="close" class="size-4" />
-                </button>
-            </div>
-            <div
-                class="bg-base-300 mt-2 h-1.5 overflow-hidden rounded-full"
-                role="progressbar"
-                aria-label="Upload-Fortschritt"
-                aria-valuenow={progress}
-                aria-valuemin={0}
-                aria-valuemax={100}
-            >
-                <div class="bg-primary h-full rounded-full transition-all" style="width: {progress}%"></div>
-            </div>
-            <div class="text-base-content/50 mt-1.5 flex items-center justify-between text-xs">
-                <span>{sizeLabel} • {remainingLabel}</span>
-                <span>{progress}%</span>
-            </div>
+        <div class="bg-base-200/60 mt-4 flex items-center justify-between gap-3 rounded-xl p-3">
+            <span class="min-w-0">
+                <span class="block truncate font-semibold">{file.name}</span>
+                <span class="text-base-content/50 text-xs">{sizeLabel}</span>
+            </span>
+            <button type="button" class="text-base-content/40 hover:text-base-content shrink-0 transition-colors" aria-label="Datei entfernen" disabled={submitting} onclick={reset}>
+                <Icon name="close" class="size-4" />
+            </button>
         </div>
     {/if}
 
@@ -122,9 +112,14 @@ is simulated (the file is not stored); the submission record is created by the c
         für die automatische Auswertung.
     </p>
 
+    {#if error}
+        <p class="text-error mt-4 text-center text-sm font-semibold" role="alert">{error}</p>
+    {/if}
+
     <div class="mt-6 flex flex-col-reverse justify-center gap-3 sm:flex-row">
-        <button type="button" class="btn btn-outline rounded-full px-8" onclick={onClose}>Abbrechen</button>
-        <button type="button" class="btn btn-primary rounded-full px-8" disabled={file === null || progress < 100} onclick={onSubmit}>
+        <button type="button" class="btn btn-outline rounded-full px-8" disabled={submitting} onclick={onClose}>Abbrechen</button>
+        <button type="button" class="btn btn-primary rounded-full px-8" disabled={file === null || submitting} onclick={submit}>
+            {#if submitting}<span class="loading loading-spinner loading-sm"></span>{/if}
             Einreichen
         </button>
     </div>

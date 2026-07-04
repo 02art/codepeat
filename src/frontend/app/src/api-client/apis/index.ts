@@ -7,6 +7,7 @@ export * from './AvailableLanguagesApi';
 export * from './CodepeatAccountApi';
 export * from './CodepeatChallengesApi';
 export * from './CodepeatFeedbackApi';
+export * from './CodepeatReflectionQuestionsApi';
 export * from './CodepeatReflectionsApi';
 export * from './CodepeatSubmissionsApi';
 export * from './CodepeatTestResultsApi';

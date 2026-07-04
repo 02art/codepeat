@@ -1,143 +1,172 @@
 <!--
 @component
-Static legal page holding both the privacy policy (Datenschutzerklärung) and the
-imprint (Impressum). The footer links here: "Datenschutz" opens the top, "Impressum"
-passes `section="impressum"` so we scroll straight to the imprint anchor.
+Legal pages (privacy policy + imprint), loaded from the backend and rendered as HTML.
+The footer links here: "Datenschutz" opens the top, "Impressum" passes section="impressum"
+to scroll to the imprint. openbook admins get an edit button (top right) to change the content.
 -->
 <script lang="ts">
+    import {fetchLegalContent, saveLegalContent} from "../../../services/legal/legal.service.js";
+    import Icon from "../../basic/Icon.svelte";
+
     let {section}: {section?: string} = $props();
 
-    const contact = {
-        name: "Duale Hochschule Baden-Württemberg Karlsruhe",
-        street: "Erzbergerstraße 121",
-        city: "76133 Karlsruhe",
-        country: "Deutschland",
-        email: "info@dhbw-karlsruhe.de",
-    };
+    let privacy = $state("");
+    let imprint = $state("");
+    let canEdit = $state(false);
+    let loading = $state(true);
+    let error = $state<string | null>(null);
 
-    // Scroll to the requested section once the page has rendered.
+    let editing = $state(false);
+    let saving = $state(false);
+    let draftPrivacy = $state("");
+    let draftImprint = $state("");
+
     $effect(() => {
-        if (section === undefined || section === "") {
+        let cancelled = false;
+        fetchLegalContent()
+            .then((content) => {
+                if (cancelled) {
+                    return;
+                }
+                privacy = content.privacy;
+                imprint = content.imprint;
+                canEdit = content.canEdit;
+                scrollToSection();
+            })
+            .catch((cause: unknown) => {
+                if (!cancelled) {
+                    error = cause instanceof Error ? cause.message : "Die Seite konnte nicht geladen werden.";
+                }
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    loading = false;
+                }
+            });
+        return () => {
+            cancelled = true;
+        };
+    });
+
+    function scrollToSection(): void {
+        if (!section) {
             return;
         }
-        const target = document.getElementById(section);
-        requestAnimationFrame(() => target?.scrollIntoView({behavior: "smooth", block: "start"}));
-    });
+        requestAnimationFrame(() => document.getElementById(section)?.scrollIntoView({behavior: "smooth", block: "start"}));
+    }
+
+    function startEdit(): void {
+        draftPrivacy = privacy;
+        draftImprint = imprint;
+        error = null;
+        editing = true;
+    }
+
+    async function save(): Promise<void> {
+        saving = true;
+        error = null;
+        try {
+            if (draftPrivacy !== privacy) {
+                await saveLegalContent("datenschutz", draftPrivacy);
+                privacy = draftPrivacy;
+            }
+            if (draftImprint !== imprint) {
+                await saveLegalContent("impressum", draftImprint);
+                imprint = draftImprint;
+            }
+            editing = false;
+        } catch (cause) {
+            error = cause instanceof Error ? cause.message : "Speichern fehlgeschlagen.";
+        } finally {
+            saving = false;
+        }
+    }
 </script>
 
 <div class="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6">
-    <article class="text-base-content/80 flex flex-col gap-8 leading-relaxed">
-        <h1 class="text-base-content text-center text-3xl font-bold sm:text-4xl">Datenschutzerklärung</h1>
+    {#if canEdit && !loading}
+        <div class="mb-4 flex justify-end">
+            {#if editing}
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-outline rounded-full px-8" disabled={saving} onclick={() => (editing = false)}>Abbrechen</button>
+                    <button type="button" class="btn btn-primary rounded-full px-8" disabled={saving} onclick={save}>
+                        {#if saving}<span class="loading loading-spinner loading-sm"></span>{/if} Speichern
+                    </button>
+                </div>
+            {:else}
+                <button
+                    type="button"
+                    class="btn btn-circle btn-ghost border-base-200 bg-base-100 shadow-sm"
+                    aria-label="Rechtstexte bearbeiten"
+                    title="Bearbeiten"
+                    onclick={startEdit}
+                >
+                    <Icon name="edit" />
+                </button>
+            {/if}
+        </div>
+    {/if}
 
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">1. Allgemeine Hinweise</h2>
-            <p>
-                Der Schutz deiner personenbezogenen Daten ist uns wichtig. In dieser Datenschutzerklärung
-                erfährst du, welche Daten wir erheben, wie wir sie verarbeiten und wofür wir sie nutzen.
-            </p>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">2. Verantwortliche Stelle</h2>
-            <p>Verantwortlich für die Datenverarbeitung im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:</p>
-            <p>CodePeat</p>
-            <address class="not-italic">
-                {contact.name}<br />
-                {contact.street}<br />
-                {contact.city}<br />
-                {contact.country}<br />
-                E-Mail: {contact.email}
-            </address>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">3. Welche Daten wir speichern</h2>
-            <p>Wenn du ein Nutzerkonto bei CodePeat erstellst, speichern wir folgende personenbezogene Daten:</p>
-            <ul class="list-disc pl-6">
-                <li>Benutzername</li>
-                <li>E-Mail-Adresse</li>
-                <li>Passwort (ausschließlich verschlüsselt/gehasht)</li>
-            </ul>
-            <p>Diese Daten benötigen wir, um dir einen Login und ein persönliches Nutzerkonto bereitzustellen.</p>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">4. Hochladen und Verarbeiten von Code</h2>
-            <p>Auf CodePeat kannst du Programmcode hochladen, um ihn automatisch bewerten zu lassen.</p>
-            <ul class="list-disc pl-6">
-                <li>Dein hochgeladener Code wird ausschließlich zur Analyse und Bewertung verwendet.</li>
-                <li>Die Verarbeitung erfolgt über ein selbstgehostetes KI-Modell innerhalb der bwCloud, einer Cloud-Infrastruktur für Hochschulen in Baden-Württemberg.</li>
-                <li>Nach der Verarbeitung wird dein hochgeladener Code vollständig gelöscht.</li>
-                <li>Es wird kein Quellcode dauerhaft gespeichert.</li>
-                <li>Gespeichert wird nur das personalisierte Feedback, das deinem Nutzerkonto zugeordnet ist.</li>
-            </ul>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">5. Serverstandort und Datenverarbeitung</h2>
-            <p>Alle Daten werden ausschließlich auf Servern innerhalb der bwCloud-Infrastruktur in Deutschland verarbeitet und gespeichert.</p>
-            <p>Eine Weitergabe deiner personenbezogenen Daten an Dritte findet nicht statt.</p>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">6. Wofür wir deine Daten nutzen</h2>
-            <p>Wir verarbeiten deine Daten zu folgenden Zwecken:</p>
-            <ul class="list-disc pl-6">
-                <li>Bereitstellung und Verwaltung deines Nutzerkontos</li>
-                <li>Durchführung der automatisierten Codebewertung</li>
-                <li>Speicherung und Anzeige deines persönlichen Feedbacks</li>
-                <li>Sicherstellung des technischen Betriebs von CodePeat</li>
-            </ul>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">7. Rechtsgrundlage</h2>
-            <p>
-                Die Verarbeitung deiner personenbezogenen Daten erfolgt gemäß Art. 6 Abs. 1 lit. b DSGVO,
-                da sie für die Nutzung unserer Plattform erforderlich ist.
-            </p>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">8. Speicherdauer</h2>
-            <ul class="list-disc pl-6">
-                <li>Deine Kontodaten speichern wir, solange dein Nutzerkonto besteht.</li>
-                <li>Hochgeladener Code wird nach der Analyse gelöscht.</li>
-                <li>Feedback wird gespeichert, bis du dein Nutzerkonto löschst oder die Löschung verlangst.</li>
-            </ul>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">9. Deine Rechte</h2>
-            <p>Du hast jederzeit das Recht auf:</p>
-            <ul class="list-disc pl-6">
-                <li>Auskunft über deine gespeicherten Daten</li>
-                <li>Berichtigung unrichtiger Daten</li>
-                <li>Löschung deiner Daten</li>
-                <li>Einschränkung der Verarbeitung</li>
-                <li>Widerspruch gegen die Verarbeitung</li>
-                <li>Datenübertragbarkeit</li>
-            </ul>
-            <p>Wende dich dafür einfach an die oben genannte verantwortliche Stelle.</p>
-        </section>
-
-        <section class="flex flex-col gap-2">
-            <h2 class="text-base-content text-xl font-bold">10. Änderungen</h2>
-            <p>
-                Wir behalten uns vor, diese Datenschutzerklärung anzupassen, wenn sich rechtliche Vorgaben
-                oder unser Angebot ändern.
-            </p>
-        </section>
-
-        <section id="impressum" class="mt-8 flex scroll-mt-28 flex-col items-center gap-2 border-t pt-12 text-center">
-            <h2 class="text-base-content text-3xl font-bold sm:text-4xl">Impressum</h2>
-            <address class="not-italic">
-                {contact.name}<br />
-                {contact.street}<br />
-                {contact.city}<br />
-                {contact.country}<br />
-                E-Mail: {contact.email}
-            </address>
-        </section>
-    </article>
+    {#if loading}
+        <div class="flex justify-center py-24" role="status" aria-label="Wird geladen">
+            <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+    {:else if error && !editing}
+        <div role="alert" class="bg-base-100 rounded-2xl px-8 py-12 text-center shadow-sm">
+            <p class="text-error font-medium">{error}</p>
+        </div>
+    {:else if editing}
+        <div class="flex flex-col gap-6">
+            <div>
+                <h2 class="mb-2 font-bold">Datenschutzerklärung (HTML)</h2>
+                <textarea bind:value={draftPrivacy} rows="18" class="border-base-300 focus:border-primary w-full resize-y rounded-2xl border p-4 font-mono text-sm outline-none"></textarea>
+            </div>
+            <div>
+                <h2 class="mb-2 font-bold">Impressum (HTML)</h2>
+                <textarea bind:value={draftImprint} rows="8" class="border-base-300 focus:border-primary w-full resize-y rounded-2xl border p-4 font-mono text-sm outline-none"></textarea>
+            </div>
+            {#if error}
+                <p class="text-error text-sm font-semibold" role="alert">{error}</p>
+            {/if}
+        </div>
+    {:else}
+        <article class="legal-content text-base-content/80 flex flex-col gap-8 leading-relaxed">
+            <div>{@html privacy}</div>
+            <div id="impressum" class="border-base-300 scroll-mt-28 border-t pt-12">{@html imprint}</div>
+        </article>
+    {/if}
 </div>
+
+<style>
+    .legal-content :global(h1) {
+        color: var(--color-base-content);
+        font-size: 1.875rem;
+        font-weight: 700;
+        text-align: center;
+    }
+    .legal-content :global(h2) {
+        color: var(--color-base-content);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-top: 1.5rem;
+    }
+    .legal-content :global(p) {
+        margin-top: 0.5rem;
+    }
+    .legal-content :global(ul) {
+        margin-top: 0.5rem;
+        list-style: disc;
+        padding-left: 1.5rem;
+    }
+    .legal-content :global(li) {
+        margin-top: 0.25rem;
+    }
+    .legal-content :global(address) {
+        margin-top: 0.5rem;
+        font-style: normal;
+    }
+    .legal-content :global(a) {
+        color: var(--color-primary);
+        text-decoration: underline;
+    }
+</style>

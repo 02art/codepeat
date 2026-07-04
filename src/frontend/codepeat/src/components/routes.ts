@@ -6,12 +6,16 @@ import ChallengeDetailPage      from "./pages/challenges/ChallengeDetailPage.sve
 import ChallengeEditorPage      from "./pages/challenges/ChallengeEditorPage.svelte";
 import ChallengeUnlockPage      from "./pages/challenges/ChallengeUnlockPage.svelte";
 import ReflectionPage           from "./pages/challenges/ReflectionPage.svelte";
+import ActivitiesPage           from "./pages/activities/ActivitiesPage.svelte";
+import SubmissionDetailPage     from "./pages/activities/SubmissionDetailPage.svelte";
 import LoginPage                from "./pages/auth/LoginPage.svelte";
 import RegisterPage             from "./pages/auth/RegisterPage.svelte";
 import RegisterSuccessPage      from "./pages/auth/RegisterSuccessPage.svelte";
 import VerifyEmailPage          from "./pages/auth/VerifyEmailPage.svelte";
 import DeleteAccountPage        from "./pages/auth/DeleteAccountPage.svelte";
 import ChangePasswordPage       from "./pages/auth/ChangePasswordPage.svelte";
+import ForgotPasswordPage       from "./pages/auth/ForgotPasswordPage.svelte";
+import ResetPasswordPage        from "./pages/auth/ResetPasswordPage.svelte";
 import ProfileSettingsPage      from "./pages/settings/ProfileSettingsPage.svelte";
 import LegalPage                from "./pages/legal/LegalPage.svelte";
 import PlaceholderPage          from "./pages/placeholder/PlaceholderPage.svelte";
@@ -50,6 +54,14 @@ export default {
         component: ChangePasswordPage,
     }),
 
+    "/forgot-password": wrap({
+        component: ForgotPasswordPage,
+    }),
+
+    "/reset-password/:key": wrap({
+        component: ResetPasswordPage,
+    }),
+
     // Placeholder routes — wired up in the UI but not built yet.
     "/courses": wrap({
         component: PlaceholderPage,
@@ -67,6 +79,14 @@ export default {
 
     "/settings": wrap({
         component: ProfileSettingsPage,
+    }),
+
+    "/activities": wrap({
+        component: ActivitiesPage,
+    }),
+
+    "/activities/:id": wrap({
+        component: SubmissionDetailPage,
     }),
 
     "/challenges/new": wrap({

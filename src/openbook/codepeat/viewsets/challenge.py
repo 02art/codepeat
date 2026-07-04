@@ -53,7 +53,7 @@ class ChallengeFilter(FilterSet):
 class ChallengeSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = Challenge
-        fields = ["id", "name", "description", "text_format", "difficulty", "visibility", "type", "constraints", "example_language", "example_input", "example_output", "views", "course", "created_by", "created_at", "modified_at"]
+        fields = ["id", "name", "description", "text_format", "difficulty", "visibility", "type", "requires_grading", "constraints", "example_language", "example_input", "example_output", "views", "course", "created_by", "created_at", "modified_at"]
         read_only_fields = ["id", "views", "created_by", "created_at", "modified_at"]
         expandable_fields = {
             "created_by": "openbook.auth.viewsets.user.UserSerializer",

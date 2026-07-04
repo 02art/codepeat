@@ -105,5 +105,6 @@ export default {
         feedbacks: new apiClient.CodepeatFeedbackApi(apiConfiguration),
         testResults: new apiClient.CodepeatTestResultsApi(apiConfiguration),
         account: new apiClient.CodepeatAccountApi(apiConfiguration),
+        legal: new apiClient.CodepeatLegalApi(apiConfiguration),
     },
 };

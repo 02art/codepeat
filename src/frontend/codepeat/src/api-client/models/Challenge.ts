@@ -95,6 +95,12 @@ export interface Challenge {
     type?: TypeEnum;
     /**
      * 
+     * @type {boolean}
+     * @memberof Challenge
+     */
+    requiresGrading?: boolean;
+    /**
+     * 
      * @type {string}
      * @memberof Challenge
      */
@@ -181,6 +187,7 @@ export function ChallengeFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'difficulty': json['difficulty'] == null ? undefined : DifficultyEnumFromJSON(json['difficulty']),
         'visibility': json['visibility'] == null ? undefined : VisibilityEnumFromJSON(json['visibility']),
         'type': json['type'] == null ? undefined : TypeEnumFromJSON(json['type']),
+        'requiresGrading': json['requires_grading'] == null ? undefined : json['requires_grading'],
         'constraints': json['constraints'] == null ? undefined : json['constraints'],
         'exampleLanguage': json['example_language'] == null ? undefined : json['example_language'],
         'exampleInput': json['example_input'] == null ? undefined : json['example_input'],
@@ -210,6 +217,7 @@ export function ChallengeToJSONTyped(value?: Omit<Challenge, 'id'|'views'|'creat
         'difficulty': DifficultyEnumToJSON(value['difficulty']),
         'visibility': VisibilityEnumToJSON(value['visibility']),
         'type': TypeEnumToJSON(value['type']),
+        'requires_grading': value['requiresGrading'],
         'constraints': value['constraints'],
         'example_language': value['exampleLanguage'],
         'example_input': value['exampleInput'],

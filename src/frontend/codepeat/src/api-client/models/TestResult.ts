@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { StatusEnum } from './StatusEnum';
+import type { TestResultStatusEnum } from './TestResultStatusEnum';
 import {
-    StatusEnumFromJSON,
-    StatusEnumFromJSONTyped,
-    StatusEnumToJSON,
-    StatusEnumToJSONTyped,
-} from './StatusEnum';
+    TestResultStatusEnumFromJSON,
+    TestResultStatusEnumFromJSONTyped,
+    TestResultStatusEnumToJSON,
+    TestResultStatusEnumToJSONTyped,
+} from './TestResultStatusEnum';
 
 /**
  * Reuse full cleaning and validation logic of the models in the REST API.
@@ -44,10 +44,10 @@ export interface TestResult {
     submission: string;
     /**
      * 
-     * @type {StatusEnum}
+     * @type {TestResultStatusEnum}
      * @memberof TestResult
      */
-    status?: StatusEnum;
+    status?: TestResultStatusEnum;
     /**
      * 
      * @type {string}
@@ -94,7 +94,7 @@ export function TestResultFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         
         'id': json['id'],
         'submission': json['submission'],
-        'status': json['status'] == null ? undefined : StatusEnumFromJSON(json['status']),
+        'status': json['status'] == null ? undefined : TestResultStatusEnumFromJSON(json['status']),
         'output': json['output'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
@@ -113,7 +113,7 @@ export function TestResultToJSONTyped(value?: Omit<TestResult, 'id'|'created_at'
     return {
         
         'submission': value['submission'],
-        'status': StatusEnumToJSON(value['status']),
+        'status': TestResultStatusEnumToJSON(value['status']),
         'output': value['output'],
     };
 }

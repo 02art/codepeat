@@ -98,6 +98,36 @@ export interface PatchedChallenge {
      * @type {string}
      * @memberof PatchedChallenge
      */
+    constraints?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PatchedChallenge
+     */
+    exampleLanguage?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PatchedChallenge
+     */
+    exampleInput?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PatchedChallenge
+     */
+    exampleOutput?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof PatchedChallenge
+     */
+    readonly views?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PatchedChallenge
+     */
     course?: string | null;
     /**
      * 
@@ -145,6 +175,11 @@ export function PatchedChallengeFromJSONTyped(json: any, ignoreDiscriminator: bo
         'difficulty': json['difficulty'] == null ? undefined : DifficultyEnumFromJSON(json['difficulty']),
         'visibility': json['visibility'] == null ? undefined : VisibilityEnumFromJSON(json['visibility']),
         'type': json['type'] == null ? undefined : TypeEnumFromJSON(json['type']),
+        'constraints': json['constraints'] == null ? undefined : json['constraints'],
+        'exampleLanguage': json['example_language'] == null ? undefined : json['example_language'],
+        'exampleInput': json['example_input'] == null ? undefined : json['example_input'],
+        'exampleOutput': json['example_output'] == null ? undefined : json['example_output'],
+        'views': json['views'] == null ? undefined : json['views'],
         'course': json['course'] == null ? undefined : json['course'],
         'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
@@ -156,7 +191,7 @@ export function PatchedChallengeToJSON(json: any): PatchedChallenge {
     return PatchedChallengeToJSONTyped(json, false);
 }
 
-export function PatchedChallengeToJSONTyped(value?: Omit<PatchedChallenge, 'id'|'created_by'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedChallengeToJSONTyped(value?: Omit<PatchedChallenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -169,6 +204,10 @@ export function PatchedChallengeToJSONTyped(value?: Omit<PatchedChallenge, 'id'|
         'difficulty': DifficultyEnumToJSON(value['difficulty']),
         'visibility': VisibilityEnumToJSON(value['visibility']),
         'type': TypeEnumToJSON(value['type']),
+        'constraints': value['constraints'],
+        'example_language': value['exampleLanguage'],
+        'example_input': value['exampleInput'],
+        'example_output': value['exampleOutput'],
         'course': value['course'],
     };
 }

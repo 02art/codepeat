@@ -98,6 +98,36 @@ export interface Challenge {
      * @type {string}
      * @memberof Challenge
      */
+    constraints?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Challenge
+     */
+    exampleLanguage?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Challenge
+     */
+    exampleInput?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Challenge
+     */
+    exampleOutput?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Challenge
+     */
+    readonly views: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Challenge
+     */
     course?: string | null;
     /**
      * 
@@ -127,6 +157,7 @@ export interface Challenge {
 export function instanceOfChallenge(value: object): value is Challenge {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('views' in value) || value['views'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedAt' in value) || value['modifiedAt'] === undefined) return false;
@@ -150,6 +181,11 @@ export function ChallengeFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'difficulty': json['difficulty'] == null ? undefined : DifficultyEnumFromJSON(json['difficulty']),
         'visibility': json['visibility'] == null ? undefined : VisibilityEnumFromJSON(json['visibility']),
         'type': json['type'] == null ? undefined : TypeEnumFromJSON(json['type']),
+        'constraints': json['constraints'] == null ? undefined : json['constraints'],
+        'exampleLanguage': json['example_language'] == null ? undefined : json['example_language'],
+        'exampleInput': json['example_input'] == null ? undefined : json['example_input'],
+        'exampleOutput': json['example_output'] == null ? undefined : json['example_output'],
+        'views': json['views'],
         'course': json['course'] == null ? undefined : json['course'],
         'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
@@ -161,7 +197,7 @@ export function ChallengeToJSON(json: any): Challenge {
     return ChallengeToJSONTyped(json, false);
 }
 
-export function ChallengeToJSONTyped(value?: Omit<Challenge, 'id'|'created_by'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function ChallengeToJSONTyped(value?: Omit<Challenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -174,6 +210,10 @@ export function ChallengeToJSONTyped(value?: Omit<Challenge, 'id'|'created_by'|'
         'difficulty': DifficultyEnumToJSON(value['difficulty']),
         'visibility': VisibilityEnumToJSON(value['visibility']),
         'type': TypeEnumToJSON(value['type']),
+        'constraints': value['constraints'],
+        'example_language': value['exampleLanguage'],
+        'example_input': value['exampleInput'],
+        'example_output': value['exampleOutput'],
         'course': value['course'],
     };
 }

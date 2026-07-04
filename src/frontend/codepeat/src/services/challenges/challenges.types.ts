@@ -34,6 +34,8 @@ export interface ChallengeDraft {
     exampleOutput: string;
     difficulty: Difficulty;
     visibility: "public" | "private";
+    /** When on, students only get XP after a lecturer accepts their submission. */
+    requiresGrading: boolean;
 }
 
 /** Worked example shown on the detail page. */

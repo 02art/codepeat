@@ -14,8 +14,19 @@ up to three default questions; teacher challenges show the questions they config
 
     let {params}: {params?: Record<string, string>} = $props();
 
-    // The submission id is passed as a query param on the route hash (#/challenges/:id/reflection?submission=…).
-    const submissionId = new URLSearchParams(window.location.hash.split("?")[1] ?? "").get("submission") ?? "";
+    // The submission id and XP outcome ride along as query params on the route hash
+    // (#/challenges/:id/reflection?submission=…&xp=none|pending|already).
+    const routeQuery = new URLSearchParams(window.location.hash.split("?")[1] ?? "");
+    const submissionId = routeQuery.get("submission") ?? "";
+    const xpOutcome = routeQuery.get("xp") ?? "";
+
+    // The thank-you message depends on how (and whether) this submission earns XP.
+    const XP_MESSAGE: Record<string, string> = {
+        pending: "Sobald dein Dozent deine Abgabe freigegeben hat, bekommst du deine wohlverdienten XP.",
+        none: "Da diese Challenge unbewertet ist, bekommst du für diese Abgabe leider keine XP.",
+        already: "Du hast diese Challenge schon einmal gemacht – dafür gibt es keine weiteren XP.",
+    };
+    const thankYouMessage = XP_MESSAGE[xpOutcome] ?? "Wir haben deine Abgabe erhalten.";
 
     let questions = $state<ReflectionQuestion[]>([]);
     let answers = $state<Record<string, AnswerValue>>({});
@@ -129,7 +140,7 @@ up to three default questions; teacher challenges show the questions they config
                 Vielen Dank für die <span class="text-primary">Abgabe</span>!
             </h1>
             <p class="text-base-content/60 mx-auto mt-4 max-w-md">
-                Wir arbeiten derzeit mit Hochdruck daran, dass du automatisiert Feedback für deine Abgabe bekommst.
+                {thankYouMessage}
             </p>
             <a href="#/challenges" class="btn btn-primary mt-8 rounded-full px-8">Zur Übersicht</a>
         </div>

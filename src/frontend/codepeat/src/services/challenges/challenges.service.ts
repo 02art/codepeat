@@ -1,7 +1,7 @@
 /** Challenge data access, backed by the CodePeat REST API via the generated client. */
 
 import backend from "../../backend.js";
-import type {Challenge as ApiChallenge, PatchedChallenge, Submission} from "../../api-client/index.js";
+import type {Challenge as ApiChallenge, PatchedChallenge} from "../../api-client/index.js";
 import {toChallenge, toChallengeDetail} from "./challenges.mapper.js";
 import type {Challenge, ChallengeDetail, ChallengeDraft} from "./challenges.types.js";
 
@@ -60,6 +60,7 @@ function draftToBody(draft: ChallengeDraft): ApiChallenge {
         exampleLanguage: draft.exampleLanguage,
         exampleInput: draft.exampleInput,
         exampleOutput: draft.exampleOutput,
+        requiresGrading: draft.requiresGrading,
         course: null,
     } as unknown as ApiChallenge;
 }
@@ -76,6 +77,7 @@ export async function fetchChallengeDraft(id: string): Promise<ChallengeDraft> {
         exampleOutput: dto.exampleOutput ?? "",
         difficulty: dto.difficulty ?? "easy",
         visibility: dto.visibility === "private" ? "private" : "public",
+        requiresGrading: dto.requiresGrading ?? true,
     };
 }
 
@@ -108,12 +110,4 @@ export async function createInviteLink(id: string): Promise<{url: string; expire
 export async function unlockChallenge(token: string): Promise<string> {
     const res = await backend.codepeat.challenges.codepeatChallengesUnlockCreate({challengeUnlock: {token}});
     return res.challenge;
-}
-
-/** Record a submission for a challenge (this is what earns the user XP); returns the submission id. */
-export async function submitChallenge(id: string): Promise<string> {
-    // Only `challenge` is sent; the server sets the user and the readonly fields. The cast works
-    // around the generated client typing the body as the full (readonly-laden) Submission.
-    const created = await backend.codepeat.submissions.codepeatSubmissionsCreate({submission: {challenge: id} as unknown as Submission});
-    return created.id;
 }

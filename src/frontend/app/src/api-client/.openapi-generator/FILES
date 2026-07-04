@@ -5,6 +5,7 @@ apis/AvailableLanguagesApi.ts
 apis/CodepeatAccountApi.ts
 apis/CodepeatChallengesApi.ts
 apis/CodepeatFeedbackApi.ts
+apis/CodepeatReflectionQuestionsApi.ts
 apis/CodepeatReflectionsApi.ts
 apis/CodepeatSubmissionsApi.ts
 apis/CodepeatTestResultsApi.ts
@@ -46,6 +47,9 @@ models/Avatar.ts
 models/BlankEnum.ts
 models/Challenge.ts
 models/ChallengeCanCreate.ts
+models/ChallengeInviteLink.ts
+models/ChallengeUnlock.ts
+models/ChallengeUnlockResult.ts
 models/Course.ts
 models/CourseMaterial.ts
 models/CourseMaterialPageRange.ts
@@ -62,6 +66,7 @@ models/HTMLLibrary.ts
 models/HTMLLibraryText.ts
 models/HTMLLibraryVersion.ts
 models/HealthResponse.ts
+models/KindEnum.ts
 models/Language.ts
 models/LibraryGroup.ts
 models/LibraryLink.ts
@@ -88,6 +93,7 @@ models/PaginatedMediaFileList.ts
 models/PaginatedPermissionList.ts
 models/PaginatedPermissionTextList.ts
 models/PaginatedReflectionList.ts
+models/PaginatedReflectionQuestionList.ts
 models/PaginatedRoleAssignmentList.ts
 models/PaginatedRoleList.ts
 models/PaginatedSiteList.ts
@@ -118,6 +124,7 @@ models/PatchedUser.ts
 models/Permission.ts
 models/PermissionText.ts
 models/Reflection.ts
+models/ReflectionQuestion.ts
 models/Role.ts
 models/RoleAssignment.ts
 models/ScopeObject.ts
@@ -132,6 +139,7 @@ models/Textbook.ts
 models/TextbookPage.ts
 models/TypeEnum.ts
 models/User.ts
+models/UserProgress.ts
 models/VisibilityEnum.ts
 models/index.ts
 runtime.ts

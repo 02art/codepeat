@@ -16,11 +16,10 @@ class Feedback_Model_Tests(TestCase):
         self.submission = Submission.objects.create(challenge=self.challenge, user=self.student, zip_file="")
 
     def test_can_create_feedback_with_minimal_data(self):
-        feedback = Feedback.objects.create(submission=self.submission, lecturer=self.lecturer, comments="Good job!", rating=5)
+        feedback = Feedback.objects.create(submission=self.submission, lecturer=self.lecturer, comments="Good job!")
         self.assertIsNotNone(feedback.id)
         self.assertEqual(feedback.submission, self.submission)
         self.assertEqual(feedback.lecturer, self.lecturer)
-        self.assertEqual(feedback.rating, 5)
 
     def test_required_fields_validation(self):
         feedback = Feedback()
@@ -35,12 +34,12 @@ class Feedback_Test_Mixin:
         self.student    = User.objects.create_user(username="student4",  email="student4@example.com",  password="pass")
         self.challenge  = Challenge.objects.create(name="FizzBuzz", description="desc", created_by=self.lecturer)
         self.submission = Submission.objects.create(challenge=self.challenge, user=self.student, zip_file="")
-        self.feedback   = Feedback.objects.create(submission=self.submission, lecturer=self.lecturer, comments="Good job!", rating=5)
+        self.feedback   = Feedback.objects.create(submission=self.submission, lecturer=self.lecturer, comments="Good job!")
 
 class Feedback_ViewSet_Tests(ModelViewSetTestMixin, Feedback_Test_Mixin, TestCase):
     base_name     = "feedback"
     model         = Feedback
-    sort_field    = "rating"
+    sort_field    = "created_at"
 
     operations = {
         "list":           {"requires_auth": True},

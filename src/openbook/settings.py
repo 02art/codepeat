@@ -265,6 +265,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
+    {
+        "NAME": "openbook.codepeat.validators.PasswordComplexityValidator",
+    },
 ]
 
 AUTH_USER_MODEL = "openbook_auth.User"
@@ -295,8 +298,8 @@ HEADLESS_SERVE_SPECIFICATION = True
 HEADLESS_FRONTEND_URLS = {
     # CodePeat single-page app (served by Django under /codepeat/). The {key} is filled in by allauth.
     "account_confirm_email": "http://localhost:8000/codepeat/index.html#/verify-email/{key}",
+    "account_reset_password_from_key": "http://localhost:8000/codepeat/index.html#/reset-password/{key}",
     #"account_reset_password": "https://app.project.org/account/password/reset",
-    #"account_reset_password_from_key": "https://app.project.org/account/password/reset/key/{key}",
     #"account_signup": "https://app.project.org/account/signup",
     #"socialaccount_login_error": "https://app.project.org/account/provider/callback",
 }

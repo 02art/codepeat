@@ -39,13 +39,13 @@ export interface Submission {
      * @type {number}
      * @memberof Submission
      */
-    user: number;
+    readonly user: number;
     /**
      * 
      * @type {string}
      * @memberof Submission
      */
-    zipFile: string;
+    zipFile?: string | null;
     /**
      * 
      * @type {Date}
@@ -73,7 +73,6 @@ export function instanceOfSubmission(value: object): value is Submission {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('challenge' in value) || value['challenge'] === undefined) return false;
     if (!('user' in value) || value['user'] === undefined) return false;
-    if (!('zipFile' in value) || value['zipFile'] === undefined) return false;
     if (!('submittedAt' in value) || value['submittedAt'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedAt' in value) || value['modifiedAt'] === undefined) return false;
@@ -93,7 +92,7 @@ export function SubmissionFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'id': json['id'],
         'challenge': json['challenge'],
         'user': json['user'],
-        'zipFile': json['zip_file'],
+        'zipFile': json['zip_file'] == null ? undefined : json['zip_file'],
         'submittedAt': (new Date(json['submitted_at'])),
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
@@ -104,7 +103,7 @@ export function SubmissionToJSON(json: any): Submission {
     return SubmissionToJSONTyped(json, false);
 }
 
-export function SubmissionToJSONTyped(value?: Omit<Submission, 'id'|'submitted_at'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function SubmissionToJSONTyped(value?: Omit<Submission, 'id'|'user'|'submitted_at'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -112,7 +111,6 @@ export function SubmissionToJSONTyped(value?: Omit<Submission, 'id'|'submitted_a
     return {
         
         'challenge': value['challenge'],
-        'user': value['user'],
         'zip_file': value['zipFile'],
     };
 }

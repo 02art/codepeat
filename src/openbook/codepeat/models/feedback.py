@@ -8,8 +8,7 @@ from .submission                                    import Submission
 class Feedback(UUIDMixin, CreatedModifiedByMixin):
     submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name="feedbacks", verbose_name=_("Submission"))
     lecturer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="given_feedbacks", verbose_name=_("Lecturer"))
-    comments = models.TextField(verbose_name=_("Comments"))
-    rating = models.PositiveSmallIntegerField(verbose_name=_("Rating"))
+    comments = models.TextField(verbose_name=_("Comments"), blank=True, default="")
 
     class Meta:
         verbose_name = _("Feedback")

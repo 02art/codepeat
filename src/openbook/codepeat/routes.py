@@ -6,6 +6,7 @@ from .viewsets.reflection_question import ReflectionQuestionViewSet
 from .viewsets.test_result import TestResultViewSet
 from .viewsets.feedback import FeedbackViewSet
 from .viewsets.account import AccountViewSet
+from .viewsets.legal_document import LegalDocumentViewSet
 
 def register_api_routes(router, prefix):
     router.register(rf'{prefix}/challenges', ChallengeViewSet, basename='challenge')
@@ -15,3 +16,4 @@ def register_api_routes(router, prefix):
     router.register(rf'{prefix}/test-results', TestResultViewSet, basename='testresult')
     router.register(rf'{prefix}/feedbacks', FeedbackViewSet, basename='feedback')
     router.register(rf'{prefix}/account', AccountViewSet, basename='codepeat-account')
+    router.register(rf'{prefix}/legal-documents', LegalDocumentViewSet, basename='legaldocument')

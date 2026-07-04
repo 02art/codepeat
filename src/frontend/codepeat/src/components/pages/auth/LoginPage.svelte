@@ -126,13 +126,12 @@ passwordless one-time code sent by email (allauth login-by-code).
                 </button>
             </div>
 
-            <button
-                type="button"
-                class="link link-primary text-center text-sm font-semibold"
-                onclick={() => switchMode("code-request")}
-            >
-                Stattdessen per E-Mail-Code anmelden
-            </button>
+            <div class="flex flex-col items-center gap-2 text-center text-sm font-semibold sm:flex-row sm:justify-center sm:gap-4">
+                <button type="button" class="link link-primary" onclick={() => switchMode("code-request")}>
+                    Per E-Mail-Code anmelden
+                </button>
+                <a href="#/forgot-password" class="link link-primary">Passwort vergessen?</a>
+            </div>
 
             <p class="text-base-content/50 text-center text-sm">
                 Noch kein Konto?

@@ -24,6 +24,10 @@ class Challenge(UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin):
     visibility = models.CharField(max_length=10, choices=VisibilityChoices.choices, default=VisibilityChoices.PUBLIC, verbose_name=_("Visibility"))
     type = models.CharField(max_length=10, choices=TypeChoices.choices, default=TypeChoices.SOLO, verbose_name=_("Type"))
 
+    # When set, XP is only granted once a lecturer accepts a submission; otherwise the challenge
+    # awards no XP (there is no automatic grading yet). CodePeat's own challenges leave this off.
+    requires_grading = models.BooleanField(default=True, verbose_name=_("Requires grading"))
+
     # Detail-page content. Constraints are one per line (like the description's task lines).
     # The worked example is optional; it is only shown when input and output are both present.
     constraints     = models.TextField(verbose_name=_("Constraints"), blank=True, default="")

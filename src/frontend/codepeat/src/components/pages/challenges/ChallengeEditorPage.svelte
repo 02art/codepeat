@@ -41,6 +41,7 @@ links and deletion). Backed by the real CodePeat API.
         exampleOutput: "",
         difficulty: "easy",
         visibility: "public",
+        requiresGrading: true,
     });
 
     let loading = $state(false);
@@ -470,6 +471,26 @@ links and deletion). Backed by the real CodePeat API.
                                 {d.label}
                             </button>
                         {/each}
+                    </div>
+                </div>
+
+                <!-- Grading / XP release -->
+                <div class="mt-6">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h3 class="flex items-center gap-2 font-bold"><Icon name="clipboard-check" class="size-5" /> Bewertung erforderlich</h3>
+                            <p class="text-base-content/60 mt-1.5 max-w-3xl text-sm">
+                                Ist diese Einstellung aktiv, erhalten Studierende ihre XP erst, nachdem du ihre Abgabe
+                                freigegeben hast. Ist sie deaktiviert, gibt es für diese Challenge aktuell keine XP,
+                                da es noch keine automatische Bewertung gibt.
+                            </p>
+                        </div>
+                        <input
+                            type="checkbox"
+                            class="toggle toggle-primary shrink-0"
+                            aria-label="Bewertung erforderlich"
+                            bind:checked={draft.requiresGrading}
+                        />
                     </div>
                 </div>
 

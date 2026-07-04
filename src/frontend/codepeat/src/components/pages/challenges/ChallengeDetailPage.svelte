@@ -6,9 +6,10 @@ single challenge, with a running solve timer that can be paused.
 <script lang="ts">
     import {push} from "svelte-spa-router";
 
-    import {fetchChallenge, submitChallenge} from "../../../services/challenges/challenges.service.js";
+    import {fetchChallenge} from "../../../services/challenges/challenges.service.js";
     import type {ChallengeDetail} from "../../../services/challenges/challenges.types.js";
-    import {refreshSession} from "../../../services/user/user.store.js";
+    import {createSubmission} from "../../../services/submissions/submission.service.js";
+    import {currentUser, refreshSession} from "../../../services/user/user.store.js";
     import Icon from "../../basic/Icon.svelte";
     import VerifiedBadge from "../../basic/VerifiedBadge.svelte";
     import CodeBlock from "./CodeBlock.svelte";
@@ -28,6 +29,8 @@ single challenge, with a running solve timer that can be paused.
 
     const formattedTime = $derived(formatDuration(elapsedSeconds));
     const formattedDate = $derived(challenge ? formatDate(challenge.createdAt) : "");
+    // Own challenges cannot be submitted to; the creator sees an edit shortcut instead.
+    const isOwn = $derived(challenge !== null && challenge.createdBy === ($currentUser?.id ?? null));
 
     $effect(() => {
         const id = params?.id;
@@ -88,20 +91,15 @@ single challenge, with a running solve timer that can be paused.
             : date.toLocaleDateString("de-DE", {day: "numeric", month: "short", year: "numeric"});
     }
 
-    async function submitSolution(): Promise<void> {
+    async function submitSolution(file: File): Promise<void> {
         if (challenge === null) {
             return;
         }
         const id = challenge.id;
+        const {id: submissionId, xpOutcome} = await createSubmission(id, file); // throws → modal shows the error
         submitOpen = false;
-        let submissionId = "";
-        try {
-            submissionId = await submitChallenge(id);
-            await refreshSession(); // reflect newly earned XP in the navbar
-        } catch {
-            // Even if recording fails, continue to the reflection step.
-        }
-        void push(submissionId ? `/challenges/${id}/reflection?submission=${submissionId}` : `/challenges/${id}/reflection`);
+        await refreshSession(); // reflect any newly earned XP in the navbar
+        void push(`/challenges/${id}/reflection?submission=${submissionId}&xp=${xpOutcome}`);
     }
 </script>
 
@@ -219,11 +217,19 @@ single challenge, with a running solve timer that can be paused.
                 </section>
             {/if}
 
-            <button type="button" class="btn btn-primary mt-10 h-14 w-full rounded-full text-lg" onclick={() => (submitOpen = true)}>
-                Einreichen
-            </button>
+            {#if isOwn}
+                <a href="#/challenges/{challenge.id}/edit" class="btn btn-outline mt-10 h-14 w-full rounded-full text-lg">
+                    <Icon name="edit" class="size-5" /> Challenge bearbeiten
+                </a>
+            {:else}
+                <button type="button" class="btn btn-primary mt-10 h-14 w-full rounded-full text-lg" onclick={() => (submitOpen = true)}>
+                    Einreichen
+                </button>
+            {/if}
         </div>
     {/if}
 </div>
 
-<SubmitModal open={submitOpen} onClose={() => (submitOpen = false)} onSubmit={submitSolution} />
+{#if !isOwn}
+    <SubmitModal open={submitOpen} onClose={() => (submitOpen = false)} onSubmit={submitSolution} />
+{/if}

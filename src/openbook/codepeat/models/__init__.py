@@ -8,3 +8,4 @@ from .feedback import Feedback
 from .account_deletion_request import AccountDeletionRequest
 from .password_change_request import PasswordChangeRequest
 from .user_avatar import UserAvatar
+from .legal_document import LegalDocument

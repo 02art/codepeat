@@ -40,6 +40,11 @@ export async function loginWithCode(code: string): Promise<void> {
     currentUser.set(await auth.confirmLoginCode(code));
 }
 
+/** Email a password-reset link (allauth "password forgotten"). */
+export async function requestPasswordReset(email: string): Promise<void> {
+    await auth.requestPasswordReset(email);
+}
+
 /** Persist the current user's profile picture and reflect it in {@link currentUser}. */
 export async function setAvatar(avatar: string): Promise<void> {
     const saved = await auth.saveAvatar(avatar);

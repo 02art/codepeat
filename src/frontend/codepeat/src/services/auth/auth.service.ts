@@ -266,6 +266,40 @@ export async function confirmLoginCode(code: string): Promise<User> {
     }
 }
 
+// Password reset (allauth "password forgotten")
+
+/** Email a password-reset link; resolves once the mail has been queued. */
+export async function requestPasswordReset(email: string): Promise<void> {
+    try {
+        await backend.authentication.passwordReset.authApiClientV1AuthPasswordRequestPost(
+            {client: CLIENT, requestPassword: {email}},
+        );
+    } catch (error) {
+        const body = await readEnvelope(error);
+        throw new Error(firstErrorMessage(body) ?? "Die E-Mail konnte nicht gesendet werden.", {cause: error});
+    }
+}
+
+/**
+ * Set a new password from the key in the reset link. allauth does not sign the user in
+ * afterwards (ACCOUNT_LOGIN_ON_PASSWORD_RESET is off), so a 401 means success — the reset
+ * went through and the user now logs in with the new password. Only a 400 (invalid/expired
+ * key or a rejected password) is a real error.
+ */
+export async function resetPassword(key: string, password: string): Promise<void> {
+    try {
+        await backend.authentication.passwordReset.authApiClientV1AuthPasswordResetPost(
+            {client: CLIENT, resetPassword: {key, password}},
+        );
+    } catch (error) {
+        if (errorResponse(error)?.status === 401) {
+            return;
+        }
+        const body = await readEnvelope(error);
+        throw new Error(firstErrorMessage(body) ?? "Das Passwort konnte nicht zurückgesetzt werden.", {cause: error});
+    }
+}
+
 // Password change (email-confirmed, CodePeat-local flow)
 
 /** Stage a password change and email a confirmation link; the change applies only once confirmed. */

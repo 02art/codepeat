@@ -17,23 +17,13 @@ import * as runtime from '../runtime';
 import type {
   Feedback,
   PaginatedFeedbackList,
-  PatchedFeedback,
 } from '../models/index';
 import {
     FeedbackFromJSON,
     FeedbackToJSON,
     PaginatedFeedbackListFromJSON,
     PaginatedFeedbackListToJSON,
-    PatchedFeedbackFromJSON,
-    PatchedFeedbackToJSON,
 } from '../models/index';
-
-export interface CodepeatFeedbacksCreateRequest {
-    feedback: Omit<Feedback, 'id'|'created_at'|'modified_at'>;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-}
 
 export interface CodepeatFeedbacksListRequest {
     expand?: string;
@@ -47,16 +37,7 @@ export interface CodepeatFeedbacksListRequest {
     createdAtDateGte?: Date;
     createdAtDateLte?: Date;
     lecturer?: number;
-    rating?: number;
     submission?: string;
-}
-
-export interface CodepeatFeedbacksPartialUpdateRequest {
-    id: string;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-    patchedFeedback?: Omit<PatchedFeedback, 'id'|'created_at'|'modified_at'>;
 }
 
 export interface CodepeatFeedbacksRetrieveRequest {
@@ -66,72 +47,10 @@ export interface CodepeatFeedbacksRetrieveRequest {
     omit?: string;
 }
 
-export interface CodepeatFeedbacksUpdateRequest {
-    id: string;
-    feedback: Omit<Feedback, 'id'|'created_at'|'modified_at'>;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-}
-
 /**
  * 
  */
 export class CodepeatFeedbackApi extends runtime.BaseAPI {
-
-    /**
-     * Ensure that object permissions are also checked when creating new model instances.  DRF checks object permissions on database-loaded objects, but during creation, the object doesn\'t exist yet. Here we validate the input and construct the instance before saving to allow permission checks.  NOTE: This is a mixin that must be used together with ``ModelViewSet`` to avoid a mysterious circular import in DRF. To overwrite the implementation of ``post()`` the mixin must come first.  Example::      class MyViewSet(ModelViewSetMixin, ModelViewSet):         pass
-     * Create
-     */
-    async codepeatFeedbacksCreateRaw(requestParameters: CodepeatFeedbacksCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Feedback>> {
-        if (requestParameters['feedback'] == null) {
-            throw new runtime.RequiredError(
-                'feedback',
-                'Required parameter "feedback" was null or undefined when calling codepeatFeedbacksCreate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/codepeat/feedbacks/`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: FeedbackToJSON(requestParameters['feedback']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => FeedbackFromJSON(jsonValue));
-    }
-
-    /**
-     * Ensure that object permissions are also checked when creating new model instances.  DRF checks object permissions on database-loaded objects, but during creation, the object doesn\'t exist yet. Here we validate the input and construct the instance before saving to allow permission checks.  NOTE: This is a mixin that must be used together with ``ModelViewSet`` to avoid a mysterious circular import in DRF. To overwrite the implementation of ``post()`` the mixin must come first.  Example::      class MyViewSet(ModelViewSetMixin, ModelViewSet):         pass
-     * Create
-     */
-    async codepeatFeedbacksCreate(requestParameters: CodepeatFeedbacksCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Feedback> {
-        const response = await this.codepeatFeedbacksCreateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
 
     /**
      * Ensure that object permissions are also checked when creating new model instances.  DRF checks object permissions on database-loaded objects, but during creation, the object doesn\'t exist yet. Here we validate the input and construct the instance before saving to allow permission checks.  NOTE: This is a mixin that must be used together with ``ModelViewSet`` to avoid a mysterious circular import in DRF. To overwrite the implementation of ``post()`` the mixin must come first.  Example::      class MyViewSet(ModelViewSetMixin, ModelViewSet):         pass
@@ -184,10 +103,6 @@ export class CodepeatFeedbackApi extends runtime.BaseAPI {
             queryParameters['lecturer'] = requestParameters['lecturer'];
         }
 
-        if (requestParameters['rating'] != null) {
-            queryParameters['rating'] = requestParameters['rating'];
-        }
-
         if (requestParameters['submission'] != null) {
             queryParameters['submission'] = requestParameters['submission'];
         }
@@ -214,60 +129,6 @@ export class CodepeatFeedbackApi extends runtime.BaseAPI {
      */
     async codepeatFeedbacksList(requestParameters: CodepeatFeedbacksListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedFeedbackList> {
         const response = await this.codepeatFeedbacksListRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Ensure that object permissions are also checked when creating new model instances.  DRF checks object permissions on database-loaded objects, but during creation, the object doesn\'t exist yet. Here we validate the input and construct the instance before saving to allow permission checks.  NOTE: This is a mixin that must be used together with ``ModelViewSet`` to avoid a mysterious circular import in DRF. To overwrite the implementation of ``post()`` the mixin must come first.  Example::      class MyViewSet(ModelViewSetMixin, ModelViewSet):         pass
-     * Partial Update
-     */
-    async codepeatFeedbacksPartialUpdateRaw(requestParameters: CodepeatFeedbacksPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Feedback>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling codepeatFeedbacksPartialUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/codepeat/feedbacks/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PatchedFeedbackToJSON(requestParameters['patchedFeedback']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => FeedbackFromJSON(jsonValue));
-    }
-
-    /**
-     * Ensure that object permissions are also checked when creating new model instances.  DRF checks object permissions on database-loaded objects, but during creation, the object doesn\'t exist yet. Here we validate the input and construct the instance before saving to allow permission checks.  NOTE: This is a mixin that must be used together with ``ModelViewSet`` to avoid a mysterious circular import in DRF. To overwrite the implementation of ``post()`` the mixin must come first.  Example::      class MyViewSet(ModelViewSetMixin, ModelViewSet):         pass
-     * Partial Update
-     */
-    async codepeatFeedbacksPartialUpdate(requestParameters: CodepeatFeedbacksPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Feedback> {
-        const response = await this.codepeatFeedbacksPartialUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -319,67 +180,6 @@ export class CodepeatFeedbackApi extends runtime.BaseAPI {
      */
     async codepeatFeedbacksRetrieve(requestParameters: CodepeatFeedbacksRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Feedback> {
         const response = await this.codepeatFeedbacksRetrieveRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Ensure that object permissions are also checked when creating new model instances.  DRF checks object permissions on database-loaded objects, but during creation, the object doesn\'t exist yet. Here we validate the input and construct the instance before saving to allow permission checks.  NOTE: This is a mixin that must be used together with ``ModelViewSet`` to avoid a mysterious circular import in DRF. To overwrite the implementation of ``post()`` the mixin must come first.  Example::      class MyViewSet(ModelViewSetMixin, ModelViewSet):         pass
-     * Update
-     */
-    async codepeatFeedbacksUpdateRaw(requestParameters: CodepeatFeedbacksUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Feedback>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling codepeatFeedbacksUpdate().'
-            );
-        }
-
-        if (requestParameters['feedback'] == null) {
-            throw new runtime.RequiredError(
-                'feedback',
-                'Required parameter "feedback" was null or undefined when calling codepeatFeedbacksUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/codepeat/feedbacks/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: FeedbackToJSON(requestParameters['feedback']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => FeedbackFromJSON(jsonValue));
-    }
-
-    /**
-     * Ensure that object permissions are also checked when creating new model instances.  DRF checks object permissions on database-loaded objects, but during creation, the object doesn\'t exist yet. Here we validate the input and construct the instance before saving to allow permission checks.  NOTE: This is a mixin that must be used together with ``ModelViewSet`` to avoid a mysterious circular import in DRF. To overwrite the implementation of ``post()`` the mixin must come first.  Example::      class MyViewSet(ModelViewSetMixin, ModelViewSet):         pass
-     * Update
-     */
-    async codepeatFeedbacksUpdate(requestParameters: CodepeatFeedbacksUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Feedback> {
-        const response = await this.codepeatFeedbacksUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

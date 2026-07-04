@@ -6,12 +6,13 @@ routes to the confirmation page once the verification email has been queued.
 <script lang="ts">
     import {push} from "svelte-spa-router";
 
-    import {emailError, passwordError, PASSWORD_MIN_LENGTH} from "../../../services/auth/auth.validation.js";
+    import {emailError, passwordError} from "../../../services/auth/auth.validation.js";
     import {loginWithProvider} from "../../../services/auth/auth.service.js";
     import {register} from "../../../services/user/user.store.js";
     import AuthField from "../../basic/AuthField.svelte";
     import GithubLogo from "../../basic/GithubLogo.svelte";
     import Icon from "../../basic/Icon.svelte";
+    import PasswordRequirements from "../../basic/PasswordRequirements.svelte";
     import AuthLayout from "./AuthLayout.svelte";
 
     let email = $state("");
@@ -65,10 +66,7 @@ routes to the confirmation page once the verification email has been queued.
         <AuthField icon="user" placeholder="Nutzername" autocomplete="username" required bind:value={username} />
         <AuthField icon="lock" type="password" placeholder="Passwort" autocomplete="new-password" required bind:value={password} />
         <AuthField icon="lock" type="password" placeholder="Passwort wiederholen" autocomplete="new-password" required bind:value={confirmPassword} />
-
-        <p class="text-base-content/50 -mt-2 px-2 text-xs">
-            Mindestens {PASSWORD_MIN_LENGTH} Zeichen, mit Buchstaben und Zahlen.
-        </p>
+        <PasswordRequirements {password} />
 
         {#if error}
             <p class="text-error text-sm font-semibold" role="alert">{error}</p>

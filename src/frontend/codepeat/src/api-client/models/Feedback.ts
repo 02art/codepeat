@@ -45,13 +45,7 @@ export interface Feedback {
      * @type {string}
      * @memberof Feedback
      */
-    comments: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof Feedback
-     */
-    rating: number;
+    comments?: string;
     /**
      * 
      * @type {Date}
@@ -73,8 +67,6 @@ export function instanceOfFeedback(value: object): value is Feedback {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('submission' in value) || value['submission'] === undefined) return false;
     if (!('lecturer' in value) || value['lecturer'] === undefined) return false;
-    if (!('comments' in value) || value['comments'] === undefined) return false;
-    if (!('rating' in value) || value['rating'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedAt' in value) || value['modifiedAt'] === undefined) return false;
     return true;
@@ -93,8 +85,7 @@ export function FeedbackFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'id': json['id'],
         'submission': json['submission'],
         'lecturer': json['lecturer'],
-        'comments': json['comments'],
-        'rating': json['rating'],
+        'comments': json['comments'] == null ? undefined : json['comments'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
@@ -114,7 +105,6 @@ export function FeedbackToJSONTyped(value?: Omit<Feedback, 'id'|'created_at'|'mo
         'submission': value['submission'],
         'lecturer': value['lecturer'],
         'comments': value['comments'],
-        'rating': value['rating'],
     };
 }
 

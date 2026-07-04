@@ -26,7 +26,7 @@ import {
 } from '../models/index';
 
 export interface CodepeatSubmissionsCreateRequest {
-    submission: Omit<Submission, 'id'|'submitted_at'|'created_at'|'modified_at'>;
+    submission: Omit<Submission, 'id'|'user'|'submitted_at'|'created_at'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;

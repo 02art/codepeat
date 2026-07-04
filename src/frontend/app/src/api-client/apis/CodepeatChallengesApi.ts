@@ -17,6 +17,9 @@ import * as runtime from '../runtime';
 import type {
   Challenge,
   ChallengeCanCreate,
+  ChallengeInviteLink,
+  ChallengeUnlock,
+  ChallengeUnlockResult,
   PaginatedChallengeList,
   PatchedChallenge,
 } from '../models/index';
@@ -25,6 +28,12 @@ import {
     ChallengeToJSON,
     ChallengeCanCreateFromJSON,
     ChallengeCanCreateToJSON,
+    ChallengeInviteLinkFromJSON,
+    ChallengeInviteLinkToJSON,
+    ChallengeUnlockFromJSON,
+    ChallengeUnlockToJSON,
+    ChallengeUnlockResultFromJSON,
+    ChallengeUnlockResultToJSON,
     PaginatedChallengeListFromJSON,
     PaginatedChallengeListToJSON,
     PatchedChallengeFromJSON,
@@ -38,7 +47,21 @@ export interface CodepeatChallengesCanCreateRetrieveRequest {
 }
 
 export interface CodepeatChallengesCreateRequest {
-    challenge: Omit<Challenge, 'id'|'created_by'|'created_at'|'modified_at'>;
+    challenge: Omit<Challenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
+export interface CodepeatChallengesDestroyRequest {
+    id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
+export interface CodepeatChallengesInviteLinkCreateRequest {
+    id: string;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -64,7 +87,7 @@ export interface CodepeatChallengesPartialUpdateRequest {
     expand?: string;
     fields?: string;
     omit?: string;
-    patchedChallenge?: Omit<PatchedChallenge, 'id'|'created_by'|'created_at'|'modified_at'>;
+    patchedChallenge?: Omit<PatchedChallenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'>;
 }
 
 export interface CodepeatChallengesRetrieveRequest {
@@ -74,9 +97,16 @@ export interface CodepeatChallengesRetrieveRequest {
     omit?: string;
 }
 
+export interface CodepeatChallengesUnlockCreateRequest {
+    challengeUnlock: ChallengeUnlock;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
 export interface CodepeatChallengesUpdateRequest {
     id: string;
-    challenge: Omit<Challenge, 'id'|'created_by'|'created_at'|'modified_at'>;
+    challenge: Omit<Challenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -182,6 +212,107 @@ export class CodepeatChallengesApi extends runtime.BaseAPI {
      */
     async codepeatChallengesCreate(requestParameters: CodepeatChallengesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Challenge> {
         const response = await this.codepeatChallengesCreateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Allow unrestricted access to the ``list`` and ``retrieve`` actions.  This small view set mixin class allows unrestricted access to the ``list`` and ``retrieve`` actions while deferring permission checks for all other actions to the permission classes of the view set (usually defined in ``settings.py``).
+     * Delete
+     */
+    async codepeatChallengesDestroyRaw(requestParameters: CodepeatChallengesDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling codepeatChallengesDestroy().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/codepeat/challenges/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Allow unrestricted access to the ``list`` and ``retrieve`` actions.  This small view set mixin class allows unrestricted access to the ``list`` and ``retrieve`` actions while deferring permission checks for all other actions to the permission classes of the view set (usually defined in ``settings.py``).
+     * Delete
+     */
+    async codepeatChallengesDestroy(requestParameters: CodepeatChallengesDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.codepeatChallengesDestroyRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Create a fresh, time-limited invitation link for a private challenge (creator only).
+     * Create
+     */
+    async codepeatChallengesInviteLinkCreateRaw(requestParameters: CodepeatChallengesInviteLinkCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChallengeInviteLink>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling codepeatChallengesInviteLinkCreate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/codepeat/challenges/{id}/invite-link/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ChallengeInviteLinkFromJSON(jsonValue));
+    }
+
+    /**
+     * Create a fresh, time-limited invitation link for a private challenge (creator only).
+     * Create
+     */
+    async codepeatChallengesInviteLinkCreate(requestParameters: CodepeatChallengesInviteLinkCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChallengeInviteLink> {
+        const response = await this.codepeatChallengesInviteLinkCreateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -367,6 +498,60 @@ export class CodepeatChallengesApi extends runtime.BaseAPI {
      */
     async codepeatChallengesRetrieve(requestParameters: CodepeatChallengesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Challenge> {
         const response = await this.codepeatChallengesRetrieveRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Redeem an invitation link: grant the signed-in user permanent access to the challenge.
+     * Create
+     */
+    async codepeatChallengesUnlockCreateRaw(requestParameters: CodepeatChallengesUnlockCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChallengeUnlockResult>> {
+        if (requestParameters['challengeUnlock'] == null) {
+            throw new runtime.RequiredError(
+                'challengeUnlock',
+                'Required parameter "challengeUnlock" was null or undefined when calling codepeatChallengesUnlockCreate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/codepeat/challenges/unlock/`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ChallengeUnlockToJSON(requestParameters['challengeUnlock']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ChallengeUnlockResultFromJSON(jsonValue));
+    }
+
+    /**
+     * Redeem an invitation link: grant the signed-in user permanent access to the challenge.
+     * Create
+     */
+    async codepeatChallengesUnlockCreate(requestParameters: CodepeatChallengesUnlockCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChallengeUnlockResult> {
+        const response = await this.codepeatChallengesUnlockCreateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

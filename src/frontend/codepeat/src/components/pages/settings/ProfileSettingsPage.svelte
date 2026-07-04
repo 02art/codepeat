@@ -5,10 +5,11 @@ Sensitive actions are confirmed by email and stay pending until confirmed.
 -->
 <script lang="ts">
     import {cancelAccountDeletion, changePassword, fetchDeletionStatus, requestAccountDeletion} from "../../../services/auth/auth.service.js";
-    import {passwordError, PASSWORD_MIN_LENGTH} from "../../../services/auth/auth.validation.js";
+    import {passwordError} from "../../../services/auth/auth.validation.js";
     import {currentUser, setAvatar} from "../../../services/user/user.store.js";
     import AuthField from "../../basic/AuthField.svelte";
     import Icon from "../../basic/Icon.svelte";
+    import PasswordRequirements from "../../basic/PasswordRequirements.svelte";
     import AvatarPickerModal from "./AvatarPickerModal.svelte";
     import ConfirmDialog from "./ConfirmDialog.svelte";
     import ConfirmationModal from "./ConfirmationModal.svelte";
@@ -196,7 +197,7 @@ Sensitive actions are confirmed by email and stay pending until confirmed.
                 <AuthField icon="lock" type="password" placeholder="* Altes Passwort" autocomplete="current-password" required bind:value={oldPassword} />
                 <AuthField icon="lock" type="password" placeholder="* Neues Passwort" autocomplete="new-password" required bind:value={newPassword} />
                 <AuthField icon="lock" type="password" placeholder="* Neues Passwort wiederholen" autocomplete="new-password" required bind:value={newPasswordRepeat} />
-                <p class="text-base-content/50 px-2 text-xs">Mindestens {PASSWORD_MIN_LENGTH} Zeichen, mit Buchstaben und Zahlen.</p>
+                <PasswordRequirements password={newPassword} />
 
                 {#if passwordFormError}
                     <p class="text-error text-sm font-semibold" role="alert">{passwordFormError}</p>
