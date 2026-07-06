@@ -149,7 +149,7 @@ Abgleich **aller** Anforderungen (US-01–US-24) mit dem aktuellen Stand
    * - US-15 (WÜRDE) Pausierbarer Timer
      - offen
      - –
-   * - US-16 (SOLL) Erfahrungslevel wählen
+   * - US-16 (WÜRDE) Erfahrungslevel wählen
      - offen
      - –
    * - US-17 (SOLL) In eigener IDE programmieren
