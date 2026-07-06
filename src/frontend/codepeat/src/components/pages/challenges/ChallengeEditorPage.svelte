@@ -21,6 +21,7 @@ links and deletion). Backed by the real CodePeat API.
     import type {QuestionDraft, QuestionKind} from "../../../services/reflections/reflection.types.js";
     import Icon, {type IconName} from "../../basic/Icon.svelte";
     import Modal from "../../basic/Modal.svelte";
+    import {CHALLENGE_CATEGORIES} from "./challenges.config.js";
     import CodeBlock from "./CodeBlock.svelte";
     import CustomQuestionModal from "./CustomQuestionModal.svelte";
 
@@ -42,7 +43,14 @@ links and deletion). Backed by the real CodePeat API.
         difficulty: "easy",
         visibility: "public",
         requiresGrading: true,
+        categories: [],
     });
+
+    function toggleCategory(category: string): void {
+        draft.categories = draft.categories.includes(category)
+            ? draft.categories.filter((c) => c !== category)
+            : [...draft.categories, category];
+    }
 
     let loading = $state(false);
     let saving = $state(false);
@@ -469,6 +477,29 @@ links and deletion). Backed by the real CodePeat API.
                                 onclick={() => (draft.difficulty = d.value)}
                             >
                                 {d.label}
+                            </button>
+                        {/each}
+                    </div>
+                </div>
+
+                <!-- Topics / tags -->
+                <div class="border-base-200 mt-6 border-b pb-6">
+                    <p class="flex items-center gap-2 font-bold"><Icon name="grid" class="size-5" /> Themen</p>
+                    <p class="text-base-content/60 mt-1.5 max-w-3xl text-sm">
+                        Ordne die Challenge passenden Themen zu. Sie erscheinen als Tags und lassen sich in der
+                        Übersicht als Filter nutzen.
+                    </p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        {#each CHALLENGE_CATEGORIES as category (category)}
+                            <button
+                                type="button"
+                                aria-pressed={draft.categories.includes(category)}
+                                class="rounded-full border-2 px-4 py-1.5 text-sm font-semibold transition-all {draft.categories.includes(category)
+                                    ? 'border-primary bg-primary/10 text-primary'
+                                    : 'border-base-200 text-base-content/50 hover:border-base-300'}"
+                                onclick={() => toggleCategory(category)}
+                            >
+                                {category}
                             </button>
                         {/each}
                     </div>

@@ -28,8 +28,8 @@ Rollen
   bewerten Abgaben.
 * **Administratoren** – Verwaltung über die OpenBook-Admin.
 
-Anmeldung erfolgt per Benutzername/Passwort **oder per GitHub** (OAuth). Siehe
-:doc:`frontend`.
+Anmeldung per Benutzername/Passwort, per einmaligem E-Mail-Code **oder per
+GitHub** (OAuth). Siehe :doc:`frontend`.
 
 Aufbau
 ------
@@ -71,47 +71,24 @@ Die Anwendung besteht aus zwei Sub-Projekten:
 Lokale Ausführung
 -----------------
 
-Der Prototyp läuft nur lokal. Gesamtstack von der Repository-Wurzel starten:
+Der Prototyp läuft nur lokal. Alles von der Repository-Wurzel:
 
 .. code-block:: bash
 
-   npm install       # einmalig (npm-Workspace)
-   npm start         # Backend (:8000) + Frontend-Sub-Projekte + Hilfsdienste
+   npm install             # einmalig (npm-Workspace)
+   npm run setup:codepeat  # einmalig bei frischer DB: Migrationen, Grunddaten, Demo-Challenges
+   npm run dev:codepeat    # Backend (:8000) + Frontend-Watch + Maildev
 
-.. important::
-
-   ``npm start`` baut aktuell **nicht** das CodePeat-Frontend mit: Der
-   Workspace-Watch in ``src/frontend`` orchestriert nur ``admin`` und ``app``.
-   CodePeat muss deshalb einmalig – und nach jeder Frontend-Änderung erneut –
-   separat gebaut werden:
-
-   .. code-block:: bash
-
-      cd src/frontend/codepeat
-      npm run build:tailwind
-      npm run build:src
-
-Aufruf im Browser. Der nackte Pfad ``/codepeat/`` liefert (per
-``django.views.static.serve``) keine ``index.html`` und ergibt 404 – daher direkt
-die Datei ansprechen:
+Danach im Browser:
 
 .. code-block:: text
 
-   http://localhost:8000/codepeat/index.html
+   http://localhost:8000/codepeat/
 
-Demo-Daten für eine frische Datenbank:
-
-.. code-block:: bash
-
-   cd src
-   python manage.py loaddata challenge submission feedback reflection test_result
-
-.. note::
-
-   Zwei bekannte Baustellen, die das Handling vereinfachen würden: (1) CodePeat in
-   ``src/frontend/package.json`` in die ``build``/``watch``-Skripte aufnehmen,
-   damit ``npm start`` es mitbaut; (2) die Auslieferung in ``urls.py`` analog zu
-   ``app`` umstellen, sodass ``/codepeat/`` selbst die ``index.html`` liefert.
+``dev:codepeat`` migriert vor dem Start automatisch – nach neuen Migrationen ist
+also kein Extraschritt nötig. ``setup:codepeat`` (``migrate`` +
+``load_initial_data`` + Demo-Challenges) wird nur bei frischer Datenbank oder
+neuen Grunddaten gebraucht.
 
 Anforderungen aus dem Pflichtenheft
 -----------------------------------
@@ -185,8 +162,8 @@ Abgleich **aller** Anforderungen (US-01–US-24) mit dem aktuellen Stand
      - umgesetzt
      - rollenabhängige Ansichten
    * - US-20 (KANN) Sortierung nach Beliebtheit
-     - teilweise
-     - ``views``-Zähler + ``?_sort=`` vorhanden
+     - umgesetzt
+     - „Beliebteste zuerst" (Sort nach ``views``) in der Übersicht
    * - US-21 (SOLL) Anonymer Lernfortschritt (Dozent)
      - teilweise
      - Abgaben/Status vorhanden; Aggregat-Ansicht offen
@@ -198,13 +175,34 @@ Abgleich **aller** Anforderungen (US-01–US-24) mit dem aktuellen Stand
      - –
    * - US-24 (SOLL) Spielerische Elemente (Gamification)
      - teilweise
-     - XP-Grundlage vorhanden; weiterführend offen
+     - XP-/Level-System (Navbar-Badge) umgesetzt; Board offen (US-22)
 
 **Erweiterungen über das Pflichtenheft hinaus:**
 
 * **GitHub-Login** – Anmeldung/Registrierung per GitHub (OAuth) über die
   allauth-Provider-Weiterleitung (``loginWithProvider("github")``).
+* **Login per E-Mail-Code** – passwortlose Anmeldung (allauth login-by-code).
 * **Einladungslinks** zur Freischaltung privater Challenges (``ChallengeAccess``).
+* **Favoriten & Gelöst-Status** je Challenge (``ChallengeFavorite`` /
+  ``is_favorited``; ``is_solved`` aus akzeptierten Abgaben).
+* **Themen-Tags** (``categories``) mit passenden Filtern in der Übersicht.
+* **XP-/Level-System** (``xp.py``, ``LevelBadge``); XP werden nach der Bewertung
+  freigegeben.
 * **Konto-Management** – token-basierter Passwort-Reset, E-Mail-Verifizierung und
   Konto-Löschung.
+* **CodePeat-Branding** der allauth-System-Mails (Absender/Betreff/Anrede).
 * **Rechtsseiten** (``LegalDocument``) und **Avatar-Auswahl** (``UserAvatar``).
+
+Tests
+-----
+
+Backend und Frontend haben eigene Suites; von der Repository-Wurzel:
+
+.. code-block:: bash
+
+   npm run test:codepeat            # Backend + Frontend
+   npm run test:codepeat:backend    # Django-Tests (openbook.codepeat)
+   npm run test:codepeat:frontend   # Vitest (Komponenten + Services)
+
+Backend-Tests liegen unter ``src/openbook/codepeat/tests`` (Modelle, ViewSets,
+Adapter), Frontend-Tests als ``*.test.ts`` neben dem jeweiligen Code.

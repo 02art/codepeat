@@ -38,4 +38,14 @@ describe("ApplicationFrame", () => {
         render(ApplicationFrame);
         await vi.waitFor(() => expect(push).toHaveBeenCalledWith("/login"));
     });
+
+    it("hides its own chrome on standalone token pages (no double footer/navbar)", () => {
+        // Token pages bring their own AuthLayout footer; the app frame must not add a second one.
+        window.location.hash = "#/verify-email/some-key";
+        sessionReady.set(true);
+        render(ApplicationFrame);
+        expect(screen.getByTestId("router-outlet")).toBeInTheDocument();
+        expect(screen.queryByRole("link", {name: "Impressum"})).toBeNull();
+        expect(screen.queryByRole("link", {name: /challenges/i})).toBeNull();
+    });
 });

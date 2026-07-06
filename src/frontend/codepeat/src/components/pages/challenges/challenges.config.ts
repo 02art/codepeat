@@ -26,3 +26,12 @@ export const SORT_OPTIONS: SortOption[] = [
     {key: "newest",     label: "Neueste zuerst",     field: "createdAt",  direction: "desc"},
     {key: "difficulty", label: "Schwierigkeit",      field: "difficulty", direction: "asc"},
 ];
+
+/**
+ * Assignable topic tags, derived from the quick filters so the editor and the overview stay
+ * in sync: every tag a teacher can set is also filterable in the catalogue.
+ */
+export const CHALLENGE_CATEGORIES: string[] = QUICK_FILTERS
+    .map((filter) => filter.predicate)
+    .filter((predicate): predicate is {kind: "category"; value: string} => predicate.kind === "category")
+    .map((predicate) => predicate.value);

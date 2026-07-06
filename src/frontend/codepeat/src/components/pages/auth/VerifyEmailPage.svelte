@@ -4,6 +4,8 @@ Email verification landing page. Opened from the link in the verification email
 (`#/verify-email/{key}`); submits the key to allauth and reports the result.
 -->
 <script lang="ts">
+    import {onMount} from "svelte";
+
     import {verifyEmail} from "../../../services/auth/auth.service.js";
     import {refreshSession} from "../../../services/user/user.store.js";
     import Icon from "../../basic/Icon.svelte";
@@ -16,7 +18,9 @@ Email verification landing page. Opened from the link in the verification email
     let status = $state<Status>("verifying");
     let errorMessage = $state("");
 
-    $effect(() => {
+    // The confirmation key is single-use, so consume it exactly once on mount (never re-run
+    // on re-render, which would try to redeem the already-used key and fail).
+    onMount(() => {
         const key = params?.key;
         if (key === undefined || key === "") {
             status = "error";

@@ -52,4 +52,16 @@ describe("ChallengeEditorPage", () => {
         await fireEvent.click(screen.getByRole("button", {name: /einstellungen/i}));
         expect(await screen.findByText(/Private Challenge/i)).toBeInTheDocument();
     });
+
+    it("assigns a topic tag in the settings tab", async () => {
+        teacher();
+        render(ChallengeEditorPage, {props: {params: {}}});
+        await screen.findByPlaceholderText(/titel wird/i);
+        await fireEvent.click(screen.getByRole("button", {name: /einstellungen/i}));
+
+        const arrayTag = await screen.findByRole("button", {name: "Array"});
+        expect(arrayTag).toHaveAttribute("aria-pressed", "false");
+        await fireEvent.click(arrayTag);
+        expect(arrayTag).toHaveAttribute("aria-pressed", "true");
+    });
 });

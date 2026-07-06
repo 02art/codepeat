@@ -30,12 +30,18 @@ pages, which bring their own standalone layout.
         return () => window.removeEventListener("hashchange", onHashChange);
     });
 
-    const bareLayout = $derived(
-        path.startsWith("/register") ||
-            path.startsWith("/login") ||
-            path.startsWith("/forgot-password") ||
-            path.startsWith("/reset-password"),
-    );
+    // Standalone auth/token pages bring their own layout (AuthLayout), so the app chrome
+    // (navbar + footer) is hidden for them — otherwise the footer would appear twice.
+    const BARE_LAYOUT_PREFIXES = [
+        "/login",
+        "/register",
+        "/forgot-password",
+        "/reset-password",
+        "/verify-email",
+        "/delete-account",
+        "/change-password",
+    ];
+    const bareLayout = $derived(BARE_LAYOUT_PREFIXES.some((prefix) => path.startsWith(prefix)));
     // The reflection questionnaire is a focused flow: hide the navbar (but keep the footer).
     const isReflection = $derived(path.endsWith("/reflection"));
     const coursesActive = $derived(path.startsWith("/courses"));

@@ -35,6 +35,8 @@ export interface ChallengeDraft {
     visibility: "public" | "private";
     /** When on, students only get XP after a lecturer accepts their submission. */
     requiresGrading: boolean;
+    /** Assigned topic tags (e.g. "Array", "Graph"); also drive the overview filters. */
+    categories: string[];
 }
 
 /** Worked example shown on the detail page. */

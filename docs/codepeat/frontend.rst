@@ -10,8 +10,9 @@ rollenabhängig.
 Was der Code tut
 ----------------
 
-Die Oberfläche zeigt Challenges, nimmt Abgaben entgegen, führt durch den
-Reflexionsbogen und stellt Feedback dar. Der Datenzugriff ist streng gekapselt:
+Die Oberfläche zeigt Challenges (mit Filtern, Themen-Tags und Favoriten), nimmt
+Abgaben entgegen, führt durch den Reflexionsbogen und stellt Feedback sowie
+XP/Level dar. Der Datenzugriff ist streng gekapselt:
 
 .. graphviz::
 
@@ -61,6 +62,10 @@ folgt. Die Funktion baut ein Formular auf
 ``callback_url=/codepeat/index.html#/challenges`` und schickt es ab. Da alles
 same-origin läuft, wird das Session-Cookie geteilt; nach erfolgreicher
 GitHub-Authentifizierung landet man wieder in der App.
+
+Zusätzlich gibt es einen **passwortlosen Login per E-Mail-Code** (allauth
+login-by-code): Die ``LoginPage`` hat drei Modi – Passwort, Code anfordern und
+Code bestätigen.
 
 Routen
 ------
@@ -145,19 +150,8 @@ Domänenmodell.
 Das gebaute Frontend liegt in ``dist/openbook/codepeat`` und wird von Django
 ausgeliefert.
 
-.. important::
+.. tip::
 
-   ``npm start`` (Repository-Wurzel) baut CodePeat derzeit **nicht** mit – der
-   Workspace-Watch in ``src/frontend`` kennt nur ``admin`` und ``app``. CodePeat
-   daher einmalig bzw. nach jeder Änderung selbst bauen:
-
-   .. code-block:: bash
-
-      cd src/frontend/codepeat
-      npm run build:tailwind
-      npm run build:src
-
-   Aufruf über ``http://localhost:8000/codepeat/index.html`` (der nackte Pfad
-   ``/codepeat/`` liefert keine ``index.html`` → 404). Dauerhafte Lösung: CodePeat
-   in ``src/frontend/package.json`` in die ``build``/``watch``-Skripte aufnehmen
-   und die Auslieferung in ``urls.py`` analog zu ``app`` umstellen.
+   Für den Alltag genügt von der Repository-Wurzel ``npm run dev:codepeat`` – das
+   startet Backend, Frontend-Watch und Maildev zusammen. Django liefert das
+   Frontend unter ``http://localhost:8000/codepeat/`` aus.

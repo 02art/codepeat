@@ -60,6 +60,7 @@ function draftToBody(draft: ChallengeDraft): ApiChallenge {
         exampleInput: draft.exampleInput,
         exampleOutput: draft.exampleOutput,
         requiresGrading: draft.requiresGrading,
+        categories: draft.categories,
         course: null,
     } as unknown as ApiChallenge;
 }
@@ -77,6 +78,7 @@ export async function fetchChallengeDraft(id: string): Promise<ChallengeDraft> {
         difficulty: dto.difficulty ?? "easy",
         visibility: dto.visibility === "private" ? "private" : "public",
         requiresGrading: dto.requiresGrading ?? true,
+        categories: Array.isArray(dto.categories) ? (dto.categories as string[]) : [],
     };
 }
 

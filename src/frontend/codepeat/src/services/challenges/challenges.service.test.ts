@@ -42,6 +42,7 @@ function dto(id: string) {
 const draft: ChallengeDraft = {
     title: "  New  ", description: "desc", constraints: "c", exampleLanguage: "Java",
     exampleInput: "in", exampleOutput: "out", difficulty: "hard", visibility: "private", requiresGrading: false,
+    categories: ["Array", "Graph"],
 };
 
 beforeEach(() => vi.clearAllMocks());
@@ -88,6 +89,7 @@ describe("create / update / delete", () => {
         expect(body.name).toBe("New");
         expect(body.requiresGrading).toBe(false);
         expect(body.visibility).toBe("private");
+        expect(body.categories).toEqual(["Array", "Graph"]);
     });
 
     it("updates an existing challenge", async () => {

@@ -6,7 +6,7 @@ routes to the confirmation page once the verification email has been queued.
 <script lang="ts">
     import {push} from "svelte-spa-router";
 
-    import {emailError, passwordError} from "../../../services/auth/auth.validation.js";
+    import {emailError, passwordError, usernameError} from "../../../services/auth/auth.validation.js";
     import {loginWithProvider} from "../../../services/auth/auth.service.js";
     import {register} from "../../../services/user/user.store.js";
     import AuthField from "../../basic/AuthField.svelte";
@@ -24,7 +24,7 @@ routes to the confirmation page once the verification email has been queued.
 
     async function handleSubmit(event: SubmitEvent): Promise<void> {
         event.preventDefault();
-        error = emailError(email) ?? passwordError(password);
+        error = emailError(email) ?? usernameError(username) ?? passwordError(password);
         if (error !== null) {
             return;
         }

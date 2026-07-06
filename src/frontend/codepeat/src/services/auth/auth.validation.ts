@@ -2,10 +2,21 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const PASSWORD_MIN_LENGTH = 8;
 
+/** Minimum username length, mirroring the backend's ACCOUNT_USERNAME_MIN_LENGTH. */
+export const USERNAME_MIN_LENGTH = 5;
+
 /** Returns an error message for an invalid email, or `null` when it is valid. */
 export function emailError(email: string): string | null {
     if (!EMAIL_PATTERN.test(email.trim())) {
         return "Bitte gib eine gültige E-Mail-Adresse ein.";
+    }
+    return null;
+}
+
+/** Returns an error message for an invalid username, or `null` when it is valid. */
+export function usernameError(username: string): string | null {
+    if (username.trim().length < USERNAME_MIN_LENGTH) {
+        return `Der Nutzername muss mindestens ${USERNAME_MIN_LENGTH} Zeichen lang sein.`;
     }
     return null;
 }

@@ -68,6 +68,18 @@ describe("RegisterPage", () => {
         expect(push).toHaveBeenCalledWith(expect.stringContaining("/register/success"));
     });
 
+    it("rejects a too-short username with a friendly message", async () => {
+        render(RegisterPage);
+        await fireEvent.input(screen.getByPlaceholderText(/mail/i), {target: {value: "new@example.com"}});
+        await fireEvent.input(screen.getByPlaceholderText("Nutzername"), {target: {value: "abcd"}});
+        const [pw, confirm] = screen.getAllByPlaceholderText(/passwort/i);
+        await fireEvent.input(pw, {target: {value: "Abcdef1!"}});
+        await fireEvent.input(confirm, {target: {value: "Abcdef1!"}});
+        await fireEvent.click(screen.getByRole("button", {name: "Registrieren"}));
+        expect(store.register).not.toHaveBeenCalled();
+        expect(screen.getByText(/Nutzername muss mindestens/i)).toBeInTheDocument();
+    });
+
     it("rejects mismatched passwords", async () => {
         render(RegisterPage);
         await fireEvent.input(screen.getByPlaceholderText(/mail/i), {target: {value: "new@example.com"}});

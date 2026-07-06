@@ -4,6 +4,8 @@ Account-deletion confirmation page. Opened from the link in the deletion email
 (`#/delete-account/{token}`); submits the token and permanently deletes the account.
 -->
 <script lang="ts">
+    import {onMount} from "svelte";
+
     import {confirmAccountDeletion} from "../../../services/auth/auth.service.js";
     import {logout} from "../../../services/user/user.store.js";
     import Icon from "../../basic/Icon.svelte";
@@ -16,7 +18,8 @@ Account-deletion confirmation page. Opened from the link in the deletion email
     let status = $state<Status>("deleting");
     let errorMessage = $state("");
 
-    $effect(() => {
+    // The deletion token is single-use, so consume it exactly once on mount.
+    onMount(() => {
         const token = params?.token;
         if (token === undefined || token === "") {
             status = "error";

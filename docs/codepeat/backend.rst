@@ -14,8 +14,8 @@ Was der Code tut
 Der Kern ist das Zusammenspiel weniger Modelle: Dozenten legen ``Challenge``\ s
 an, Studierende reichen dazu ``Submission``\ s ein, an denen ``TestResult``,
 ``Feedback`` und ``Reflection`` hängen. ``ReflectionQuestion`` definiert die
-Fragen des Reflexionsbogens je Challenge, ``ChallengeAccess`` regelt den Zugriff
-auf private Challenges.
+Fragen des Reflexionsbogens je Challenge; ``ChallengeAccess`` regelt den Zugriff
+auf private Challenges, ``ChallengeFavorite`` die Lesezeichen der Nutzenden.
 
 .. graphviz::
 
@@ -26,9 +26,10 @@ auf private Challenges.
 
        Course     [label="{Course|(openbook.content)}", style=filled, fillcolor="#eeeeee"];
        User       [label="{User|(openbook.auth)}",       style=filled, fillcolor="#eeeeee"];
-       Challenge  [label="{Challenge|difficulty\lvisibility\ltype\lrequires_grading\l}"];
+       Challenge  [label="{Challenge|difficulty\lvisibility\ltype\lrequires_grading\lcategories\lviews\l}"];
        Question   [label="{ReflectionQuestion|kind\loptions\lposition\l}"];
        Access     [label="{ChallengeAccess|(User + Challenge)\l}"];
+       Favorite   [label="{ChallengeFavorite|(User + Challenge)\l}"];
        Submission [label="{Submission|status\lzip_file\lsubmitted_at\l}"];
        Reflection [label="{Reflection|answers (JSON)\l}"];
        TestResult [label="{TestResult|status\loutput\l}"];
@@ -39,6 +40,8 @@ auf private Challenges.
        Challenge  -> Question   [label="1 : n"];
        Challenge  -> Access     [label="1 : n"];
        User       -> Access     [label="1 : n"];
+       Challenge  -> Favorite   [label="1 : n"];
+       User       -> Favorite   [label="1 : n"];
        Challenge  -> Submission [label="1 : n"];
        User       -> Submission [label="1 : n"];
        Submission -> Reflection [label="1 : 1", arrowhead=none];
@@ -49,8 +52,8 @@ auf private Challenges.
 
 * **Challenge** – Aufgabe mit ``difficulty`` (easy/medium/hard), ``visibility``
   (public/private), ``type`` (solo/group), Detailinhalten (``constraints``,
-  Beispiel-Ein-/Ausgabe) und ``requires_grading``; optional einem ``Course``
-  zugeordnet.
+  Beispiel-Ein-/Ausgabe), Themen-Tags (``categories``), Aufrufzähler (``views``)
+  und ``requires_grading``; optional einem ``Course`` zugeordnet.
 * **Submission** – Lösungs-Upload (``zip_file``, ``submitted_at``) mit manuell
   gesetztem ``status`` (pending/accepted/rejected); ``hidden_from_student``
   blendet Abgaben aus der Studierenden-Liste aus.
@@ -64,9 +67,14 @@ auf private Challenges.
   als Grundlage bestehen.
 * **ChallengeAccess** – Freischaltung privater Challenges (unique je User +
   Challenge).
+* **ChallengeFavorite** – Lesezeichen einer Challenge (unique je User +
+  Challenge); speist ``is_favorited``. Der Gelöst-Status ``is_solved`` leitet
+  sich aus akzeptierten Submissions ab (keine eigene Tabelle).
 
 Ergänzend: ``LegalDocument``, ``UserAvatar``, ``AccountDeletionRequest`` und
-``PasswordChangeRequest`` für Rechts- und Kontofunktionen.
+``PasswordChangeRequest`` für Rechts- und Kontofunktionen. Die allauth-eigenen
+System-Mails (E-Mail-Bestätigung, Login-Code) werden über ``allauth/adapter.py``
+leicht auf CodePeat gebrandet (Absender, Betreff, Anrede).
 
 REST-API
 --------
@@ -85,10 +93,14 @@ einen ``ModelViewSetMixin``; JSON als Format, Listen paginiert.
      - Beschreibung
    * - ``/challenges/``
      - GET, POST, PUT, PATCH, DELETE
-     - Challenges (Liste/Detail auch anonym lesbar)
+     - Challenges (Liste/Detail auch anonym lesbar; liefert je Nutzer
+       ``is_solved`` / ``is_favorited``)
    * - ``/challenges/can-create/``
      - GET
      - Darf der User Challenges anlegen? (steuert „+")
+   * - ``/challenges/{id}/favorite/``
+     - POST, DELETE
+     - Challenge favorisieren bzw. entfernen
    * - ``/challenges/{id}/invite-link/`` · ``/challenges/unlock/``
      - POST
      - Einladungslink erzeugen bzw. Challenge freischalten
@@ -182,7 +194,10 @@ Benutzen & Verändern
 **Rechte anpassen** – analog zu ``0003_teacher_challenge_permissions`` per
 Daten-Migration Gruppen-Rechte vergeben, oder manuell im Admin.
 
-**Fixtures laden** (Reihenfolge wegen Abhängigkeiten beachten):
+**Grunddaten & Demo laden** – auf frischer Datenbank am einfachsten von der
+Repository-Wurzel per ``npm run setup:codepeat`` (``migrate`` +
+``load_initial_data`` + Demo-Challenges). Einzelne Fixtures direkt laden
+(Reihenfolge wegen Abhängigkeiten):
 
 .. code-block:: bash
 

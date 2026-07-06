@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {QUICK_FILTERS, SORT_OPTIONS} from "./challenges.config.js";
+import {CHALLENGE_CATEGORIES, QUICK_FILTERS, SORT_OPTIONS} from "./challenges.config.js";
 import {challengesViewState} from "./challenges.view-state.js";
 
 describe("QUICK_FILTERS", () => {
@@ -28,6 +28,16 @@ describe("SORT_OPTIONS", () => {
         const popular = SORT_OPTIONS.find((o) => o.key === "popular");
         expect(popular?.field).toBe("views");
         expect(popular?.direction).toBe("desc");
+    });
+});
+
+describe("CHALLENGE_CATEGORIES", () => {
+    it("mirrors the category filters so every assignable tag is filterable", () => {
+        const categoryFilters = QUICK_FILTERS.filter((f) => f.predicate.kind === "category");
+        expect(CHALLENGE_CATEGORIES).toHaveLength(categoryFilters.length);
+        expect(CHALLENGE_CATEGORIES).toContain("Array");
+        expect(CHALLENGE_CATEGORIES).toContain("Two Pointers");
+        expect(CHALLENGE_CATEGORIES).not.toContain("Neu");
     });
 });
 

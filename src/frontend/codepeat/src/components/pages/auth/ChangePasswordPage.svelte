@@ -4,6 +4,8 @@ Password-change confirmation page. Opened from the link in the confirmation emai
 (`#/change-password/{token}`); submits the token so the staged new password takes effect.
 -->
 <script lang="ts">
+    import {onMount} from "svelte";
+
     import {confirmPasswordChange} from "../../../services/auth/auth.service.js";
     import Icon from "../../basic/Icon.svelte";
     import AuthLayout from "./AuthLayout.svelte";
@@ -15,7 +17,8 @@ Password-change confirmation page. Opened from the link in the confirmation emai
     let status = $state<Status>("confirming");
     let errorMessage = $state("");
 
-    $effect(() => {
+    // The confirmation token is single-use, so consume it exactly once on mount.
+    onMount(() => {
         const token = params?.token;
         if (token === undefined || token === "") {
             status = "error";
