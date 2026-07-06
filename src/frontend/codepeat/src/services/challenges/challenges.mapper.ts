@@ -1,11 +1,9 @@
 /**
  * Maps CodePeat backend DTOs to the frontend challenge domain model.
  *
- * The backend (`/api/codepeat/challenges/`) stores the core task fields plus the detail
- * content (constraints, worked example, view count). Engagement metadata (categories,
- * popularity, assignment, per-user progress) has no backend representation yet and is
- * defaulted here. These defaults are a deliberate, documented bridge — not invented data:
- * once the backend exposes a field, only this module changes, never the components.
+ * Every field is backed by `/api/codepeat/challenges/`: the core task, the detail content
+ * (constraints, worked example, view count), the topic categories, and the signed-in user's
+ * per-challenge state (`is_solved`, `is_favorited`, both False for anonymous requests).
  */
 
 import type {Challenge as ApiChallenge} from "../../api-client/index.js";
@@ -100,26 +98,22 @@ function toExample(dto: ApiChallenge): ChallengeExample | null {
     };
 }
 
-/**
- * Map a challenge for the overview list. Fields with no backend source are defaulted; they
- * activate automatically once the corresponding backend feature lands.
- */
+/** Map a challenge for the overview list. */
 export function toChallenge(dto: ApiChallenge): Challenge {
+    const createdBy = creatorId(dto.createdBy);
     return {
         id: dto.id,
         title: dto.name,
         description: dto.description ?? "",
         difficulty: dto.difficulty ?? "easy",
-        createdBy: creatorId(dto.createdBy),
+        createdBy,
+        official: createdBy === "",
         createdAt: toIsoDate(dto.createdAt),
         isNew: isNew(dto.createdAt),
-        status: "open",
-        favorited: false,
-        solved: false,
-        categories: [],
-        popular: false,
-        assigned: false,
-        solvedCount: 0,
+        favorited: dto.isFavorited ?? false,
+        solved: dto.isSolved ?? false,
+        categories: Array.isArray(dto.categories) ? (dto.categories as string[]) : [],
+        views: dto.views ?? 0,
     };
 }
 

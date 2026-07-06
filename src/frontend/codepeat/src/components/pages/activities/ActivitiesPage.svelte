@@ -201,7 +201,7 @@ sorting; the to-grade tab additionally filters to open submissions. Rows link to
     open={pendingDelete !== null}
     title="Abgabe entfernen?"
     message={canGrade && scope === "to_grade"
-        ? "Die Abgabe wird als abgelehnt an den Studenten zurückgeschickt."
+        ? "Die Abgabe wird als abgelehnt an die einreichende Person zurückgeschickt."
         : "Die Abgabe verschwindet aus deiner Liste. Sobald sie bewertet wird, taucht sie wieder auf."}
     confirmLabel="Entfernen"
     destructive

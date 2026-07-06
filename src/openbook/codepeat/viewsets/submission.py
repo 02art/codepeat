@@ -1,20 +1,20 @@
 import django_filters
 from django.db.models import Q
-from openbook.drf.flex_serializers import FlexFieldsModelSerializer
-from openbook.drf.viewsets import ModelViewSetMixin, with_flex_fields_parameters
+from django_filters.filterset import FilterSet
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema, extend_schema_view, inline_serializer
 from rest_flex_fields2.filter_backends import FlexFieldsFilterBackend
 from rest_framework import serializers
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin, DestroyModelMixin
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from django_filters.filterset import FilterSet
-from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema, extend_schema_view, inline_serializer
-from ..models.feedback import Feedback
+
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets import ModelViewSetMixin, with_flex_fields_parameters
 from ..models.submission import Submission
 from ..xp import xp_outcome_for
 
@@ -136,21 +136,14 @@ class SubmissionViewSet(ModelViewSetMixin, ListModelMixin, RetrieveModelMixin, C
         if decision not in ("accept", "reject"):
             return Response({"detail": "Ungültige Entscheidung."}, status=400)
 
-        submission.status = Submission.StatusChoices.ACCEPTED if decision == "accept" else Submission.StatusChoices.REJECTED
-        submission.hidden_from_student = False  # a fresh result resurfaces for the student
-        submission.save()
-        Feedback.objects.create(submission=submission, lecturer=user, comments=request.data.get("comment") or "")
+        submission.grade(lecturer=user, accepted=decision == "accept", comment=request.data.get("comment") or "")
         return Response(self.get_serializer(submission).data)
 
     def destroy(self, request, *args, **kwargs):
         """Students drop a submission from their own list; a lecturer's delete rejects and returns it."""
         submission = self.get_object()
-        user = request.user
-        if submission.user_id == user.id:
-            submission.hidden_from_student = True
-            submission.save()
+        if submission.user_id == request.user.id:
+            submission.hide_from_student_list()
         else:  # get_queryset guarantees the only other case is the challenge creator
-            submission.status = Submission.StatusChoices.REJECTED
-            submission.hidden_from_student = False
-            submission.save()
+            submission.reject()
         return Response(status=204)

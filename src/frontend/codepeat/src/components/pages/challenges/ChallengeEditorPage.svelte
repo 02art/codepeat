@@ -501,9 +501,9 @@ links and deletion). Backed by the real CodePeat API.
                             <h3 class="flex items-center gap-2 font-bold"><Icon name="lock" class="size-5" /> Private Challenge</h3>
                             <p class="text-base-content/60 mt-1.5 max-w-3xl text-sm">
                                 Mit dieser Einstellung kannst du die Challenge auf privat setzen. Nach dem Aktivieren kannst du einen
-                                Einladungslink erstellen, über den Nutzer dauerhaft Zugriff erhalten. Der Link ist 30 Minuten gültig und
+                                Einladungslink erstellen, über den andere dauerhaft Zugriff erhalten. Der Link ist 30 Minuten gültig und
                                 kann jeweils um weitere 30 Minuten verlängert werden. Wird die Challenge zwischenzeitlich öffentlich
-                                geschaltet und anschließend wieder privat, verlieren alle bisherigen Nutzer ihren Zugriff.
+                                geschaltet und anschließend wieder privat, verlieren alle bisher freigeschalteten Personen ihren Zugriff.
                             </p>
                         </div>
                         <input

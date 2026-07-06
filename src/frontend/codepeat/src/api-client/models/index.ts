@@ -16,6 +16,7 @@ export * from './Avatar';
 export * from './BlankEnum';
 export * from './Challenge';
 export * from './ChallengeCanCreate';
+export * from './ChallengeFavoriteResult';
 export * from './ChallengeInviteLink';
 export * from './ChallengeUnlock';
 export * from './ChallengeUnlockResult';

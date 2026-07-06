@@ -1,5 +1,6 @@
 from django.db                                      import models
 from django.utils.translation                       import gettext_lazy as _
+
 from openbook.core.models.mixins.uuid               import UUIDMixin
 from openbook.auth.models.mixins.audit              import CreatedModifiedByMixin
 from openbook.core.models.mixins.text               import NameDescriptionMixin
@@ -35,6 +36,8 @@ class Challenge(UUIDMixin, CreatedModifiedByMixin, NameDescriptionMixin):
     example_input   = models.TextField(verbose_name=_("Example Input"), blank=True, default="")
     example_output  = models.TextField(verbose_name=_("Example Output"), blank=True, default="")
     views           = models.PositiveIntegerField(verbose_name=_("Views"), default=0)
+    # Topic tags for the overview quick filters (e.g. ["Arrays", "Hashing"]).
+    categories      = models.JSONField(verbose_name=_("Categories"), default=list, blank=True)
 
     course = models.ForeignKey(
         "openbook_content.Course",

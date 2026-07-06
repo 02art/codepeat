@@ -20,13 +20,13 @@ import {
     AccessRequestDurationPeriodToJSON,
     AccessRequestDurationPeriodToJSONTyped,
 } from './AccessRequestDurationPeriod';
-import type { DecisionEnum } from './DecisionEnum';
+import type { AccessRequestDecisionEnum } from './AccessRequestDecisionEnum';
 import {
-    DecisionEnumFromJSON,
-    DecisionEnumFromJSONTyped,
-    DecisionEnumToJSON,
-    DecisionEnumToJSONTyped,
-} from './DecisionEnum';
+    AccessRequestDecisionEnumFromJSON,
+    AccessRequestDecisionEnumFromJSONTyped,
+    AccessRequestDecisionEnumToJSON,
+    AccessRequestDecisionEnumToJSONTyped,
+} from './AccessRequestDecisionEnum';
 
 /**
  * Access Request
@@ -84,10 +84,10 @@ export interface AccessRequest {
     durationValue?: number;
     /**
      * 
-     * @type {DecisionEnum}
+     * @type {AccessRequestDecisionEnum}
      * @memberof AccessRequest
      */
-    decision?: DecisionEnum;
+    decision?: AccessRequestDecisionEnum;
     /**
      * 
      * @type {Date}
@@ -157,7 +157,7 @@ export function AccessRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
         'endDate': json['end_date'] == null ? undefined : (new Date(json['end_date'])),
         'durationPeriod': json['duration_period'] == null ? undefined : AccessRequestDurationPeriodFromJSON(json['duration_period']),
         'durationValue': json['duration_value'] == null ? undefined : json['duration_value'],
-        'decision': json['decision'] == null ? undefined : DecisionEnumFromJSON(json['decision']),
+        'decision': json['decision'] == null ? undefined : AccessRequestDecisionEnumFromJSON(json['decision']),
         'decisionDate': (json['decision_date'] == null ? null : new Date(json['decision_date'])),
         'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
@@ -184,7 +184,7 @@ export function AccessRequestToJSONTyped(value?: Omit<AccessRequest, 'id'|'decis
         'end_date': value['endDate'] == null ? undefined : ((value['endDate'] as any).toISOString()),
         'duration_period': AccessRequestDurationPeriodToJSON(value['durationPeriod']),
         'duration_value': value['durationValue'],
-        'decision': DecisionEnumToJSON(value['decision']),
+        'decision': AccessRequestDecisionEnumToJSON(value['decision']),
     };
 }
 

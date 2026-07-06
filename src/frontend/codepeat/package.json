@@ -18,6 +18,9 @@
     "prewatch:src": "npm run build:avatars",
     "build:src": "node ../../../bin/frontend/build.js",
     "build": "npm run build:tailwind && npm run build:api-client && npm run build:auth-client && npm run build:src",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint \"./**/*.{ts,tsx}\"",
     "lintfix": "eslint --fix \"./**/*.{ts,tsx}\"",
     "prettier": "prettier --ignore-path ../../.gitignore \"**/*.+(ts|tsx)\"",
@@ -26,10 +29,16 @@
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.31.1",
+    "@sveltejs/vite-plugin-svelte": "^5.1.1",
     "@tailwindcss/cli": "^4.2.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/svelte": "^5.4.2",
+    "@vitest/coverage-v8": "^3.2.6",
     "daisyui": "^5.5.19",
+    "jsdom": "^25.0.1",
     "serve": "^14.2.4",
     "svelte-spa-router": "^5.0.1",
-    "tailwindcss": "^4.2.4"
+    "tailwindcss": "^4.2.4",
+    "vitest": "^3.2.6"
   }
 }

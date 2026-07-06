@@ -169,8 +169,6 @@ Lists all coding challenges with quick filters, search, sorting and per-user pro
 {#snippet filterIcon(name: FilterIcon)}
     {#if name === "logo"}
         <img src="codepeat-logo.png" alt="" class="size-5 object-contain" />
-    {:else if name === "fire"}
-        <Icon name="flame" />
     {:else}
         <Icon name={name} />
     {/if}
@@ -376,8 +374,6 @@ Lists all coding challenges with quick filters, search, sorting and per-user pro
                         <span class="flex size-5 shrink-0 items-center justify-center">
                             {#if challenge.solved}
                                 <Icon name="check" class="text-base-content size-5" label="Bearbeitet" />
-                            {:else if challenge.status === "locked"}
-                                <Icon name="lock" class="text-base-content/50 size-5" label="Gesperrt" />
                             {/if}
                         </span>
 

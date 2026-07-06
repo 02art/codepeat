@@ -95,6 +95,12 @@ export interface Challenge {
     type?: TypeEnum;
     /**
      * 
+     * @type {boolean}
+     * @memberof Challenge
+     */
+    requiresGrading?: boolean;
+    /**
+     * 
      * @type {string}
      * @memberof Challenge
      */
@@ -123,6 +129,12 @@ export interface Challenge {
      * @memberof Challenge
      */
     readonly views: number;
+    /**
+     * 
+     * @type {any}
+     * @memberof Challenge
+     */
+    categories?: any | null;
     /**
      * 
      * @type {string}
@@ -181,11 +193,13 @@ export function ChallengeFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'difficulty': json['difficulty'] == null ? undefined : DifficultyEnumFromJSON(json['difficulty']),
         'visibility': json['visibility'] == null ? undefined : VisibilityEnumFromJSON(json['visibility']),
         'type': json['type'] == null ? undefined : TypeEnumFromJSON(json['type']),
+        'requiresGrading': json['requires_grading'] == null ? undefined : json['requires_grading'],
         'constraints': json['constraints'] == null ? undefined : json['constraints'],
         'exampleLanguage': json['example_language'] == null ? undefined : json['example_language'],
         'exampleInput': json['example_input'] == null ? undefined : json['example_input'],
         'exampleOutput': json['example_output'] == null ? undefined : json['example_output'],
         'views': json['views'],
+        'categories': json['categories'] == null ? undefined : json['categories'],
         'course': json['course'] == null ? undefined : json['course'],
         'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
@@ -210,10 +224,12 @@ export function ChallengeToJSONTyped(value?: Omit<Challenge, 'id'|'views'|'creat
         'difficulty': DifficultyEnumToJSON(value['difficulty']),
         'visibility': VisibilityEnumToJSON(value['visibility']),
         'type': TypeEnumToJSON(value['type']),
+        'requires_grading': value['requiresGrading'],
         'constraints': value['constraints'],
         'example_language': value['exampleLanguage'],
         'example_input': value['exampleInput'],
         'example_output': value['exampleOutput'],
+        'categories': value['categories'],
         'course': value['course'],
     };
 }

@@ -9,6 +9,7 @@
 from django.conf                     import settings
 from django.conf.urls.static         import static
 from django.views.generic.base       import RedirectView
+from django.views.static             import serve
 from django.urls                     import include
 from django.urls                     import path
 from drf_spectacular.views           import SpectacularAPIView
@@ -57,5 +58,9 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
     # Frontend SPA
+    codepeat_root = f"{settings.BASE_DIR}/frontend/codepeat/dist/openbook/codepeat"
+
     urlpatterns += static("app/", document_root=f"{settings.BASE_DIR}/frontend/app/dist/openbook/app")
-    urlpatterns += static("codepeat/", document_root=f"{settings.BASE_DIR}/frontend/codepeat/dist/openbook/codepeat")
+    # Serve index.html for the bare /codepeat/ path (/codepeat redirects here via APPEND_SLASH).
+    urlpatterns += [path("codepeat/", serve, {"path": "index.html", "document_root": codepeat_root})]
+    urlpatterns += static("codepeat/", document_root=codepeat_root)

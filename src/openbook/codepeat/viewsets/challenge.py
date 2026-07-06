@@ -1,21 +1,24 @@
 from django.core import signing
-from django.db.models import Q
-from openbook.drf.flex_serializers import FlexFieldsModelSerializer
-from openbook.drf.permissions import DjangoObjectPermissionsOnly
-from openbook.drf.viewsets import AllowAnonymousListRetrieveViewSetMixin, ModelViewSetMixin, with_flex_fields_parameters
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated, SAFE_METHODS
-from rest_framework.response import Response
-from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_flex_fields2.filter_backends import FlexFieldsFilterBackend
+from django.db.models import BooleanField, Exists, OuterRef, Q, Value
 from django_filters.filterset import FilterSet
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_flex_fields2.filter_backends import FlexFieldsFilterBackend
 from rest_framework import serializers
+from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated, SAFE_METHODS
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.permissions import DjangoObjectPermissionsOnly
+from openbook.drf.viewsets import AllowAnonymousListRetrieveViewSetMixin, ModelViewSetMixin, with_flex_fields_parameters
 from ..models.challenge import Challenge
 from ..models.challenge_access import ChallengeAccess
+from ..models.challenge_favorite import ChallengeFavorite
+from ..models.submission import Submission
 
 # Signed, time-limited token that unlocks a private challenge for whoever opens the link.
 INVITE_SALT = "codepeat.challenge.invite"
@@ -51,10 +54,15 @@ class ChallengeFilter(FilterSet):
         }
 
 class ChallengeSerializer(FlexFieldsModelSerializer):
+    # Per-request state for the signed-in user, filled by the viewset's queryset annotations
+    # (False for anonymous requests). Read-only — toggled via the `favorite`/submission actions.
+    is_solved = serializers.BooleanField(read_only=True)
+    is_favorited = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = Challenge
-        fields = ["id", "name", "description", "text_format", "difficulty", "visibility", "type", "requires_grading", "constraints", "example_language", "example_input", "example_output", "views", "course", "created_by", "created_at", "modified_at"]
-        read_only_fields = ["id", "views", "created_by", "created_at", "modified_at"]
+        fields = ["id", "name", "description", "text_format", "difficulty", "visibility", "type", "requires_grading", "constraints", "example_language", "example_input", "example_output", "views", "categories", "is_solved", "is_favorited", "course", "created_by", "created_at", "modified_at"]
+        read_only_fields = ["id", "views", "is_solved", "is_favorited", "created_by", "created_at", "modified_at"]
         expandable_fields = {
             "created_by": "openbook.auth.viewsets.user.UserSerializer",
             "course": "openbook.content.viewsets.course.CourseSerializer",
@@ -78,15 +86,27 @@ class ChallengeViewSet(AllowAnonymousListRetrieveViewSetMixin, ModelViewSetMixin
         """Public challenges are visible to everyone; private ones only to the creator, staff and unlocked users."""
         qs = Challenge.objects.all()
         user = getattr(self.request, "user", None)
+
         if user is None or not user.is_authenticated:
-            return qs.filter(visibility=Challenge.VisibilityChoices.PUBLIC)
-        if user.is_staff:
-            return qs
-        return qs.filter(
-            Q(visibility=Challenge.VisibilityChoices.PUBLIC)
-            | Q(created_by=user)
-            | Q(access_grants__user=user)
-        ).distinct()
+            return qs.filter(visibility=Challenge.VisibilityChoices.PUBLIC).annotate(
+                is_solved=Value(False, output_field=BooleanField()),
+                is_favorited=Value(False, output_field=BooleanField()),
+            )
+
+        if not user.is_staff:
+            qs = qs.filter(
+                Q(visibility=Challenge.VisibilityChoices.PUBLIC)
+                | Q(created_by=user)
+                | Q(access_grants__user=user)
+            ).distinct()
+
+        # Per-user overview state, resolved in one query instead of N follow-up requests.
+        return qs.annotate(
+            is_solved=Exists(Submission.objects.filter(
+                challenge=OuterRef("pk"), user=user, status=Submission.StatusChoices.ACCEPTED,
+            )),
+            is_favorited=Exists(ChallengeFavorite.objects.filter(challenge=OuterRef("pk"), user=user)),
+        )
 
     def perform_update(self, serializer):
         """Switching a challenge to public clears all unlock grants (re-privatising starts fresh)."""
@@ -103,6 +123,20 @@ class ChallengeViewSet(AllowAnonymousListRetrieveViewSetMixin, ModelViewSetMixin
         """Report whether the requesting user may create challenges (teacher or admin)."""
         allowed = request.user.is_authenticated and request.user.has_perm("codepeat.add_challenge")
         return Response({"can_create": allowed})
+
+    @extend_schema(request=None, responses=inline_serializer(
+        name="ChallengeFavoriteResult",
+        fields={"favorited": serializers.BooleanField()},
+    ))
+    @action(detail=True, methods=["post", "delete"], url_path="favorite", permission_classes=[IsAuthenticated])
+    def favorite(self, request, pk=None):
+        """Toggle the signed-in user's bookmark for this challenge (POST adds, DELETE removes)."""
+        challenge = self.get_object()
+        if request.method == "DELETE":
+            ChallengeFavorite.objects.filter(challenge=challenge, user=request.user).delete()
+            return Response({"favorited": False})
+        ChallengeFavorite.objects.get_or_create(challenge=challenge, user=request.user)
+        return Response({"favorited": True})
 
     @extend_schema(request=None, responses=inline_serializer(
         name="ChallengeInviteLink",

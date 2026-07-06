@@ -22,7 +22,7 @@ up to three default questions; teacher challenges show the questions they config
 
     // The thank-you message depends on how (and whether) this submission earns XP.
     const XP_MESSAGE: Record<string, string> = {
-        pending: "Sobald dein Dozent deine Abgabe freigegeben hat, bekommst du deine wohlverdienten XP.",
+        pending: "Sobald deine Abgabe freigegeben wurde, bekommst du deine wohlverdienten XP.",
         none: "Da diese Challenge unbewertet ist, bekommst du für diese Abgabe leider keine XP.",
         already: "Du hast diese Challenge schon einmal gemacht – dafür gibt es keine weiteren XP.",
     };

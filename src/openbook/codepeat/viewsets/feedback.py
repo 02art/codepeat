@@ -1,9 +1,10 @@
-from openbook.drf.flex_serializers import FlexFieldsModelSerializer
-from openbook.drf.viewsets import ModelViewSetMixin, with_flex_fields_parameters
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
-from rest_framework.viewsets import GenericViewSet
 from django_filters.filterset import FilterSet
 from drf_spectacular.utils import extend_schema
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.viewsets import GenericViewSet
+
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets import ModelViewSetMixin, with_flex_fields_parameters
 from ..models.feedback import Feedback
 
 class FeedbackFilter(FilterSet):

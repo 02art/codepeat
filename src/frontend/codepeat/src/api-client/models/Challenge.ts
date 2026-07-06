@@ -131,6 +131,24 @@ export interface Challenge {
     readonly views: number;
     /**
      * 
+     * @type {any}
+     * @memberof Challenge
+     */
+    categories?: any | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof Challenge
+     */
+    readonly isSolved: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof Challenge
+     */
+    readonly isFavorited: boolean;
+    /**
+     * 
      * @type {string}
      * @memberof Challenge
      */
@@ -164,6 +182,8 @@ export function instanceOfChallenge(value: object): value is Challenge {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('views' in value) || value['views'] === undefined) return false;
+    if (!('isSolved' in value) || value['isSolved'] === undefined) return false;
+    if (!('isFavorited' in value) || value['isFavorited'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedAt' in value) || value['modifiedAt'] === undefined) return false;
@@ -193,6 +213,9 @@ export function ChallengeFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'exampleInput': json['example_input'] == null ? undefined : json['example_input'],
         'exampleOutput': json['example_output'] == null ? undefined : json['example_output'],
         'views': json['views'],
+        'categories': json['categories'] == null ? undefined : json['categories'],
+        'isSolved': json['is_solved'],
+        'isFavorited': json['is_favorited'],
         'course': json['course'] == null ? undefined : json['course'],
         'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
@@ -204,7 +227,7 @@ export function ChallengeToJSON(json: any): Challenge {
     return ChallengeToJSONTyped(json, false);
 }
 
-export function ChallengeToJSONTyped(value?: Omit<Challenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function ChallengeToJSONTyped(value?: Omit<Challenge, 'id'|'views'|'is_solved'|'is_favorited'|'created_by'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -222,6 +245,7 @@ export function ChallengeToJSONTyped(value?: Omit<Challenge, 'id'|'views'|'creat
         'example_language': value['exampleLanguage'],
         'example_input': value['exampleInput'],
         'example_output': value['exampleOutput'],
+        'categories': value['categories'],
         'course': value['course'],
     };
 }

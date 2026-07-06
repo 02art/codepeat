@@ -1,0 +1,1 @@
+# codepeat allauth integration

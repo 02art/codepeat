@@ -39,7 +39,7 @@ a hero panel introducing the product and a "by students, for students" banner.
 
     <div class="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-4 text-center md:mt-32">
         <img src="greenH.png" alt="" aria-hidden="true" class="size-12" />
-        <span class="text-base-content/70 text-xl font-bold">Ein Projekt von Studenten, für Studenten</span>
+        <span class="text-base-content/70 text-xl font-bold">Ein Projekt von Studierenden, für Studierende</span>
         <img src="dhlogo.png" alt="Duale Hochschule Baden-Württemberg" class="h-12 w-auto sm:h-14" />
     </div>
 </div>

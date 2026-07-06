@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 from openbook.auth.middleware.current_user import reset_current_user
 from openbook.test import ModelViewSetTestMixin
 from openbook.auth.models import User

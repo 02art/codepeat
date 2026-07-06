@@ -95,6 +95,12 @@ export interface PatchedChallenge {
     type?: TypeEnum;
     /**
      * 
+     * @type {boolean}
+     * @memberof PatchedChallenge
+     */
+    requiresGrading?: boolean;
+    /**
+     * 
      * @type {string}
      * @memberof PatchedChallenge
      */
@@ -123,6 +129,12 @@ export interface PatchedChallenge {
      * @memberof PatchedChallenge
      */
     readonly views?: number;
+    /**
+     * 
+     * @type {any}
+     * @memberof PatchedChallenge
+     */
+    categories?: any | null;
     /**
      * 
      * @type {string}
@@ -175,11 +187,13 @@ export function PatchedChallengeFromJSONTyped(json: any, ignoreDiscriminator: bo
         'difficulty': json['difficulty'] == null ? undefined : DifficultyEnumFromJSON(json['difficulty']),
         'visibility': json['visibility'] == null ? undefined : VisibilityEnumFromJSON(json['visibility']),
         'type': json['type'] == null ? undefined : TypeEnumFromJSON(json['type']),
+        'requiresGrading': json['requires_grading'] == null ? undefined : json['requires_grading'],
         'constraints': json['constraints'] == null ? undefined : json['constraints'],
         'exampleLanguage': json['example_language'] == null ? undefined : json['example_language'],
         'exampleInput': json['example_input'] == null ? undefined : json['example_input'],
         'exampleOutput': json['example_output'] == null ? undefined : json['example_output'],
         'views': json['views'] == null ? undefined : json['views'],
+        'categories': json['categories'] == null ? undefined : json['categories'],
         'course': json['course'] == null ? undefined : json['course'],
         'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
@@ -204,10 +218,12 @@ export function PatchedChallengeToJSONTyped(value?: Omit<PatchedChallenge, 'id'|
         'difficulty': DifficultyEnumToJSON(value['difficulty']),
         'visibility': VisibilityEnumToJSON(value['visibility']),
         'type': TypeEnumToJSON(value['type']),
+        'requires_grading': value['requiresGrading'],
         'constraints': value['constraints'],
         'example_language': value['exampleLanguage'],
         'example_input': value['exampleInput'],
         'example_output': value['exampleOutput'],
+        'categories': value['categories'],
         'course': value['course'],
     };
 }

@@ -39,7 +39,7 @@ export const CATALOGUE: CatalogueGroup[] = [
             {text: "Was würdest du an deiner Lösung nachträglich verbessern oder anders umsetzen?", kind: "text"},
             {text: "Welche Kenntnisse oder Fähigkeiten waren für die Bearbeitung besonders wichtig?", kind: "text"},
             {text: "Welche neuen Erkenntnisse hast du während der Bearbeitung gewonnen?", kind: "text"},
-            {text: "Wie sicher fühlst du dich, die Lösung einem Kommilitonen oder dem Dozenten erklären zu können?", kind: "scale", options: ["gar nicht sicher", "sehr sicher"]},
+            {text: "Wie sicher fühlst du dich, die Lösung jemand anderem erklären zu können?", kind: "scale", options: ["gar nicht sicher", "sehr sicher"]},
         ],
     },
     {

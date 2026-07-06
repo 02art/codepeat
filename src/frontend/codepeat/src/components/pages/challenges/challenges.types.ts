@@ -1,4 +1,4 @@
-import type {ChallengeStatus, Difficulty} from "../../../services/challenges/challenges.types.js";
+import type {Difficulty} from "../../../services/challenges/challenges.types.js";
 
 export type FilterIcon =
     | "list"
@@ -7,22 +7,20 @@ export type FilterIcon =
     | "plus"
     | "bug"
     | "logo"
-    | "fire"
     | "sort"
     | "grid"
-    | "math";
+    | "math"
+    | "clock"
+    | "search";
 
-/**
- * Describes how a quick filter narrows the challenge list. Kept as plain data
- * so filters can be served by the (mock) API instead of hardcoded in the UI.
- */
+/** Describes how a quick filter narrows the challenge list. Kept as plain data. */
 export type FilterPredicate =
     | {kind: "all"}
+    | {kind: "official"}
     | {kind: "own"}
+    | {kind: "new"}
     | {kind: "difficulty"; value: Difficulty}
-    | {kind: "status"; value: ChallengeStatus}
-    | {kind: "category"; value: string}
-    | {kind: "flag"; value: "popular" | "new" | "assigned"};
+    | {kind: "category"; value: string};
 
 export interface QuickFilter {
     key: string;
@@ -32,7 +30,7 @@ export interface QuickFilter {
 }
 
 /** Challenge field a sort option orders by. */
-export type SortField = "difficulty" | "createdAt" | "solvedCount";
+export type SortField = "difficulty" | "createdAt" | "views";
 
 export interface SortOption {
     key: string;

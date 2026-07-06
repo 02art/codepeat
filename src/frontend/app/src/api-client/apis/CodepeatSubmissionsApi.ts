@@ -17,19 +17,39 @@ import * as runtime from '../runtime';
 import type {
   PaginatedSubmissionList,
   Submission,
+  SubmissionGradeDecisionEnum,
 } from '../models/index';
 import {
     PaginatedSubmissionListFromJSON,
     PaginatedSubmissionListToJSON,
     SubmissionFromJSON,
     SubmissionToJSON,
+    SubmissionGradeDecisionEnumFromJSON,
+    SubmissionGradeDecisionEnumToJSON,
 } from '../models/index';
 
 export interface CodepeatSubmissionsCreateRequest {
-    submission: Omit<Submission, 'id'|'user'|'submitted_at'|'created_at'|'modified_at'>;
+    challenge: string;
+    zipFile: Blob;
     expand?: string;
     fields?: string;
     omit?: string;
+}
+
+export interface CodepeatSubmissionsDestroyRequest {
+    id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
+export interface CodepeatSubmissionsGradeCreateRequest {
+    id: string;
+    decision: SubmissionGradeDecisionEnum;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    comment?: string;
 }
 
 export interface CodepeatSubmissionsListRequest {
@@ -41,6 +61,8 @@ export interface CodepeatSubmissionsListRequest {
     search?: string;
     sort?: string;
     challenge?: string;
+    scope?: CodepeatSubmissionsListScopeEnum;
+    status?: CodepeatSubmissionsListStatusEnum;
     submittedAtDate?: Date;
     submittedAtDateGte?: Date;
     submittedAtDateLte?: Date;
@@ -64,10 +86,17 @@ export class CodepeatSubmissionsApi extends runtime.BaseAPI {
      * Create
      */
     async codepeatSubmissionsCreateRaw(requestParameters: CodepeatSubmissionsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Submission>> {
-        if (requestParameters['submission'] == null) {
+        if (requestParameters['challenge'] == null) {
             throw new runtime.RequiredError(
-                'submission',
-                'Required parameter "submission" was null or undefined when calling codepeatSubmissionsCreate().'
+                'challenge',
+                'Required parameter "challenge" was null or undefined when calling codepeatSubmissionsCreate().'
+            );
+        }
+
+        if (requestParameters['zipFile'] == null) {
+            throw new runtime.RequiredError(
+                'zipFile',
+                'Required parameter "zipFile" was null or undefined when calling codepeatSubmissionsCreate().'
             );
         }
 
@@ -87,10 +116,32 @@ export class CodepeatSubmissionsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        headerParameters['Content-Type'] = 'application/json';
-
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['challenge'] != null) {
+            formParams.append('challenge', requestParameters['challenge'] as any);
+        }
+
+        if (requestParameters['zipFile'] != null) {
+            formParams.append('zip_file', requestParameters['zipFile'] as any);
         }
 
         const response = await this.request({
@@ -98,7 +149,7 @@ export class CodepeatSubmissionsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: SubmissionToJSON(requestParameters['submission']),
+            body: formParams,
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SubmissionFromJSON(jsonValue));
@@ -110,6 +161,139 @@ export class CodepeatSubmissionsApi extends runtime.BaseAPI {
      */
     async codepeatSubmissionsCreate(requestParameters: CodepeatSubmissionsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Submission> {
         const response = await this.codepeatSubmissionsCreateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Students drop a submission from their own list; a lecturer\'s delete rejects and returns it.
+     * Delete
+     */
+    async codepeatSubmissionsDestroyRaw(requestParameters: CodepeatSubmissionsDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling codepeatSubmissionsDestroy().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/codepeat/submissions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Students drop a submission from their own list; a lecturer\'s delete rejects and returns it.
+     * Delete
+     */
+    async codepeatSubmissionsDestroy(requestParameters: CodepeatSubmissionsDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.codepeatSubmissionsDestroyRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Accept or reject a submission (challenge creator only); an optional comment is stored as feedback.
+     * Create
+     */
+    async codepeatSubmissionsGradeCreateRaw(requestParameters: CodepeatSubmissionsGradeCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Submission>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling codepeatSubmissionsGradeCreate().'
+            );
+        }
+
+        if (requestParameters['decision'] == null) {
+            throw new runtime.RequiredError(
+                'decision',
+                'Required parameter "decision" was null or undefined when calling codepeatSubmissionsGradeCreate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+            { contentType: 'application/x-www-form-urlencoded' },
+            { contentType: 'application/json' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['decision'] != null) {
+            formParams.append('decision', requestParameters['decision'] as any);
+        }
+
+        if (requestParameters['comment'] != null) {
+            formParams.append('comment', requestParameters['comment'] as any);
+        }
+
+        const response = await this.request({
+            path: `/api/codepeat/submissions/{id}/grade/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SubmissionFromJSON(jsonValue));
+    }
+
+    /**
+     * Accept or reject a submission (challenge creator only); an optional comment is stored as feedback.
+     * Create
+     */
+    async codepeatSubmissionsGradeCreate(requestParameters: CodepeatSubmissionsGradeCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Submission> {
+        const response = await this.codepeatSubmissionsGradeCreateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -150,6 +334,14 @@ export class CodepeatSubmissionsApi extends runtime.BaseAPI {
 
         if (requestParameters['challenge'] != null) {
             queryParameters['challenge'] = requestParameters['challenge'];
+        }
+
+        if (requestParameters['scope'] != null) {
+            queryParameters['scope'] = requestParameters['scope'];
+        }
+
+        if (requestParameters['status'] != null) {
+            queryParameters['status'] = requestParameters['status'];
         }
 
         if (requestParameters['submittedAtDate'] != null) {
@@ -245,3 +437,21 @@ export class CodepeatSubmissionsApi extends runtime.BaseAPI {
     }
 
 }
+
+/**
+ * @export
+ */
+export const CodepeatSubmissionsListScopeEnum = {
+    Mine: 'mine',
+    ToGrade: 'to_grade'
+} as const;
+export type CodepeatSubmissionsListScopeEnum = typeof CodepeatSubmissionsListScopeEnum[keyof typeof CodepeatSubmissionsListScopeEnum];
+/**
+ * @export
+ */
+export const CodepeatSubmissionsListStatusEnum = {
+    Accepted: 'accepted',
+    Pending: 'pending',
+    Rejected: 'rejected'
+} as const;
+export type CodepeatSubmissionsListStatusEnum = typeof CodepeatSubmissionsListStatusEnum[keyof typeof CodepeatSubmissionsListStatusEnum];

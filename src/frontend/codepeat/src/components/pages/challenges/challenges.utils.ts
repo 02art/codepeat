@@ -48,15 +48,10 @@ function matchesPredicate(
     switch (predicate.kind) {
         case "all":        return true;
         case "own":        return challenge.createdBy === currentUserId;
+        case "official":   return challenge.official;
+        case "new":        return challenge.isNew;
         case "difficulty": return challenge.difficulty === predicate.value;
-        case "status":     return challenge.status === predicate.value;
         case "category":   return challenge.categories.includes(predicate.value);
-        case "flag":
-            switch (predicate.value) {
-                case "popular":  return challenge.popular;
-                case "new":      return challenge.isNew;
-                case "assigned": return challenge.assigned;
-            }
     }
 }
 
@@ -78,6 +73,7 @@ export function filterChallenges(
         filtered = filtered.filter((c) =>
             c.title.toLowerCase().includes(normalizedQuery)
             || c.description.toLowerCase().includes(normalizedQuery)
+            || c.categories.some((category) => category.toLowerCase().includes(normalizedQuery))
         );
     }
 
@@ -108,8 +104,8 @@ export function sortChallenges(
             case "createdAt":
                 comparison = a.createdAt.localeCompare(b.createdAt);
                 break;
-            case "solvedCount":
-                comparison = a.solvedCount - b.solvedCount;
+            case "views":
+                comparison = a.views - b.views;
                 break;
         }
 

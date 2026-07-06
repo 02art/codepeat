@@ -35,7 +35,6 @@ function toUser(user: AllauthUser, enrichment: Enrichment): User {
         email: user.email ?? "",
         progress: enrichment.progress,
         avatarUrl: enrichment.avatarUrl,
-        verified: false,
         canCreateChallenges: enrichment.canCreateChallenges,
     };
 }

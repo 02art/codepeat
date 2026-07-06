@@ -172,7 +172,7 @@ pages, which bring their own standalone layout.
                     {#if isAuthenticated}
                         <div class="hidden md:block">
                             <Dropdown
-                                label="Benutzermenü öffnen"
+                                label="Profilmenü öffnen"
                                 triggerClass="avatar focus-visible:ring-primary/50 cursor-pointer rounded-full border-0 bg-transparent p-0 outline-none focus-visible:ring-2 {avatarUrl ? '' : 'avatar-placeholder'}"
                                 menuClass="menu bg-base-100 rounded-box mt-3 right-0 w-56 gap-1 p-2 shadow-md"
                             >

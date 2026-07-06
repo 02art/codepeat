@@ -41,7 +41,11 @@ class TestResult_ViewSet_Tests(ModelViewSetTestMixin, TestResult_Test_Mixin, Tes
     operations = {
         "list":           {"requires_auth": True},
         "retrieve":       {"requires_auth": True},
-        "create":         {"supported": False},
+        "create":         {"request_data": lambda self: {
+                               "submission": str(self.submission.pk),
+                               "status": "passed",
+                               "output": "All tests passed.",
+                           }},
         "update":         {"supported": False},
         "partial_update": {"supported": False},
         "destroy":        {"supported": False},

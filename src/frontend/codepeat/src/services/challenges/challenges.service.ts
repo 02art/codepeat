@@ -37,14 +37,13 @@ export async function fetchChallenge(id: string): Promise<ChallengeDetail> {
     return toChallengeDetail(challenge);
 }
 
-/**
- * Mark a challenge as favorited.
- *
- * Favorites have no backend representation yet (see integration plan, Phase 4), so this is a
- * client-side no-op that resolves — the overview's optimistic toggle holds for the session.
- */
-export async function setFavorite(_id: string, _favorited: boolean): Promise<void> {
-    return Promise.resolve();
+/** Persist the current user's favorite state for a challenge (toggle add/remove). */
+export async function setFavorite(id: string, favorited: boolean): Promise<void> {
+    if (favorited) {
+        await backend.codepeat.challenges.codepeatChallengesFavoriteCreate({id});
+    } else {
+        await backend.codepeat.challenges.codepeatChallengesFavoriteDestroy({id});
+    }
 }
 
 /** Map an editor draft to the API body. Casts away the generated client's readonly-Omit typing. */

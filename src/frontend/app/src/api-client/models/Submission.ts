@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { SubmissionStatusEnum } from './SubmissionStatusEnum';
+import {
+    SubmissionStatusEnumFromJSON,
+    SubmissionStatusEnumFromJSONTyped,
+    SubmissionStatusEnumToJSON,
+    SubmissionStatusEnumToJSONTyped,
+} from './SubmissionStatusEnum';
+
 /**
  * Reuse full cleaning and validation logic of the models in the REST API.
  * 
@@ -48,6 +56,30 @@ export interface Submission {
     zipFile?: string | null;
     /**
      * 
+     * @type {SubmissionStatusEnum}
+     * @memberof Submission
+     */
+    readonly status: SubmissionStatusEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof Submission
+     */
+    readonly feedback: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof Submission
+     */
+    readonly xpOutcome: string;
+    /**
+     * 
+     * @type {Array<any>}
+     * @memberof Submission
+     */
+    readonly reflectionAnswers: Array<any> | null;
+    /**
+     * 
      * @type {Date}
      * @memberof Submission
      */
@@ -66,6 +98,8 @@ export interface Submission {
     readonly modifiedAt: Date | null;
 }
 
+
+
 /**
  * Check if a given object implements the Submission interface.
  */
@@ -73,6 +107,10 @@ export function instanceOfSubmission(value: object): value is Submission {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('challenge' in value) || value['challenge'] === undefined) return false;
     if (!('user' in value) || value['user'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('feedback' in value) || value['feedback'] === undefined) return false;
+    if (!('xpOutcome' in value) || value['xpOutcome'] === undefined) return false;
+    if (!('reflectionAnswers' in value) || value['reflectionAnswers'] === undefined) return false;
     if (!('submittedAt' in value) || value['submittedAt'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedAt' in value) || value['modifiedAt'] === undefined) return false;
@@ -93,6 +131,10 @@ export function SubmissionFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'challenge': json['challenge'],
         'user': json['user'],
         'zipFile': json['zip_file'] == null ? undefined : json['zip_file'],
+        'status': SubmissionStatusEnumFromJSON(json['status']),
+        'feedback': json['feedback'],
+        'xpOutcome': json['xp_outcome'],
+        'reflectionAnswers': json['reflection_answers'] == null ? null : json['reflection_answers'],
         'submittedAt': (new Date(json['submitted_at'])),
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
@@ -103,7 +145,7 @@ export function SubmissionToJSON(json: any): Submission {
     return SubmissionToJSONTyped(json, false);
 }
 
-export function SubmissionToJSONTyped(value?: Omit<Submission, 'id'|'user'|'submitted_at'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function SubmissionToJSONTyped(value?: Omit<Submission, 'id'|'user'|'status'|'feedback'|'xp_outcome'|'reflection_answers'|'submitted_at'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

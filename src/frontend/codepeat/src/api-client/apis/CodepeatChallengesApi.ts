@@ -17,6 +17,7 @@ import * as runtime from '../runtime';
 import type {
   Challenge,
   ChallengeCanCreate,
+  ChallengeFavoriteResult,
   ChallengeInviteLink,
   ChallengeUnlock,
   ChallengeUnlockResult,
@@ -28,6 +29,8 @@ import {
     ChallengeToJSON,
     ChallengeCanCreateFromJSON,
     ChallengeCanCreateToJSON,
+    ChallengeFavoriteResultFromJSON,
+    ChallengeFavoriteResultToJSON,
     ChallengeInviteLinkFromJSON,
     ChallengeInviteLinkToJSON,
     ChallengeUnlockFromJSON,
@@ -47,13 +50,27 @@ export interface CodepeatChallengesCanCreateRetrieveRequest {
 }
 
 export interface CodepeatChallengesCreateRequest {
-    challenge: Omit<Challenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'>;
+    challenge: Omit<Challenge, 'id'|'views'|'is_solved'|'is_favorited'|'created_by'|'created_at'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
 }
 
 export interface CodepeatChallengesDestroyRequest {
+    id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
+export interface CodepeatChallengesFavoriteCreateRequest {
+    id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
+export interface CodepeatChallengesFavoriteDestroyRequest {
     id: string;
     expand?: string;
     fields?: string;
@@ -87,7 +104,7 @@ export interface CodepeatChallengesPartialUpdateRequest {
     expand?: string;
     fields?: string;
     omit?: string;
-    patchedChallenge?: Omit<PatchedChallenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'>;
+    patchedChallenge?: Omit<PatchedChallenge, 'id'|'views'|'is_solved'|'is_favorited'|'created_by'|'created_at'|'modified_at'>;
 }
 
 export interface CodepeatChallengesRetrieveRequest {
@@ -106,7 +123,7 @@ export interface CodepeatChallengesUnlockCreateRequest {
 
 export interface CodepeatChallengesUpdateRequest {
     id: string;
-    challenge: Omit<Challenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'>;
+    challenge: Omit<Challenge, 'id'|'views'|'is_solved'|'is_favorited'|'created_by'|'created_at'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -263,6 +280,107 @@ export class CodepeatChallengesApi extends runtime.BaseAPI {
      */
     async codepeatChallengesDestroy(requestParameters: CodepeatChallengesDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.codepeatChallengesDestroyRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Toggle the signed-in user\'s bookmark for this challenge (POST adds, DELETE removes).
+     * Create
+     */
+    async codepeatChallengesFavoriteCreateRaw(requestParameters: CodepeatChallengesFavoriteCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChallengeFavoriteResult>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling codepeatChallengesFavoriteCreate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/codepeat/challenges/{id}/favorite/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ChallengeFavoriteResultFromJSON(jsonValue));
+    }
+
+    /**
+     * Toggle the signed-in user\'s bookmark for this challenge (POST adds, DELETE removes).
+     * Create
+     */
+    async codepeatChallengesFavoriteCreate(requestParameters: CodepeatChallengesFavoriteCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChallengeFavoriteResult> {
+        const response = await this.codepeatChallengesFavoriteCreateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Toggle the signed-in user\'s bookmark for this challenge (POST adds, DELETE removes).
+     * Delete
+     */
+    async codepeatChallengesFavoriteDestroyRaw(requestParameters: CodepeatChallengesFavoriteDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling codepeatChallengesFavoriteDestroy().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/codepeat/challenges/{id}/favorite/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Toggle the signed-in user\'s bookmark for this challenge (POST adds, DELETE removes).
+     * Delete
+     */
+    async codepeatChallengesFavoriteDestroy(requestParameters: CodepeatChallengesFavoriteDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.codepeatChallengesFavoriteDestroyRaw(requestParameters, initOverrides);
     }
 
     /**

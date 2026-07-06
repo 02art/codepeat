@@ -279,7 +279,7 @@ AUTHENTICATION_BACKENDS = (
 
 # Allauth – Local accounts
 # See: https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "openbook.auth.allauth.adapter.AccountAdapter"
+ACCOUNT_ADAPTER = "openbook.codepeat.allauth.adapter.AccountAdapter"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 300
 ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]

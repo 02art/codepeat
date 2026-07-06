@@ -5,6 +5,7 @@ apis/AvailableLanguagesApi.ts
 apis/CodepeatAccountApi.ts
 apis/CodepeatChallengesApi.ts
 apis/CodepeatFeedbackApi.ts
+apis/CodepeatLegalApi.ts
 apis/CodepeatReflectionQuestionsApi.ts
 apis/CodepeatReflectionsApi.ts
 apis/CodepeatSubmissionsApi.ts
@@ -33,6 +34,7 @@ apis/WebsitesApi.ts
 apis/index.ts
 index.ts
 models/AccessRequest.ts
+models/AccessRequestDecisionEnum.ts
 models/AccessRequestDurationPeriod.ts
 models/AccountActionResult.ts
 models/AccountDeletionConfirm.ts
@@ -54,7 +56,6 @@ models/Course.ts
 models/CourseMaterial.ts
 models/CourseMaterialPageRange.ts
 models/CurrentUser.ts
-models/DecisionEnum.ts
 models/DifficultyEnum.ts
 models/DurationPeriodEnum.ts
 models/EnrollActionRequest.ts
@@ -68,6 +69,7 @@ models/HTMLLibraryVersion.ts
 models/HealthResponse.ts
 models/KindEnum.ts
 models/Language.ts
+models/LegalDocument.ts
 models/LibraryGroup.ts
 models/LibraryLink.ts
 models/MediaFile.ts
@@ -87,6 +89,7 @@ models/PaginatedHTMLLibraryList.ts
 models/PaginatedHTMLLibraryTextList.ts
 models/PaginatedHTMLLibraryVersionList.ts
 models/PaginatedLanguageList.ts
+models/PaginatedLegalDocumentList.ts
 models/PaginatedLibraryGroupList.ts
 models/PaginatedLibraryLinkList.ts
 models/PaginatedMediaFileList.ts
@@ -112,7 +115,7 @@ models/PatchedCourseMaterial.ts
 models/PatchedCourseMaterialPageRange.ts
 models/PatchedCurrentUser.ts
 models/PatchedEnrollmentMethod.ts
-models/PatchedFeedback.ts
+models/PatchedLegalDocument.ts
 models/PatchedLibraryGroup.ts
 models/PatchedLibraryLink.ts
 models/PatchedMediaFile.ts
@@ -131,9 +134,13 @@ models/ScopeObject.ts
 models/ScopeTypeList.ts
 models/ScopeTypeRetrieve.ts
 models/Site.ts
-models/StatusEnum.ts
+models/SlugEnum.ts
 models/Submission.ts
+models/SubmissionGrade.ts
+models/SubmissionGradeDecisionEnum.ts
+models/SubmissionStatusEnum.ts
 models/TestResult.ts
+models/TestResultStatusEnum.ts
 models/TextFormatEnum.ts
 models/Textbook.ts
 models/TextbookPage.ts

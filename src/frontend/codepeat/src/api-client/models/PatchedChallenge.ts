@@ -131,6 +131,24 @@ export interface PatchedChallenge {
     readonly views?: number;
     /**
      * 
+     * @type {any}
+     * @memberof PatchedChallenge
+     */
+    categories?: any | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PatchedChallenge
+     */
+    readonly isSolved?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PatchedChallenge
+     */
+    readonly isFavorited?: boolean;
+    /**
+     * 
      * @type {string}
      * @memberof PatchedChallenge
      */
@@ -187,6 +205,9 @@ export function PatchedChallengeFromJSONTyped(json: any, ignoreDiscriminator: bo
         'exampleInput': json['example_input'] == null ? undefined : json['example_input'],
         'exampleOutput': json['example_output'] == null ? undefined : json['example_output'],
         'views': json['views'] == null ? undefined : json['views'],
+        'categories': json['categories'] == null ? undefined : json['categories'],
+        'isSolved': json['is_solved'] == null ? undefined : json['is_solved'],
+        'isFavorited': json['is_favorited'] == null ? undefined : json['is_favorited'],
         'course': json['course'] == null ? undefined : json['course'],
         'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
@@ -198,7 +219,7 @@ export function PatchedChallengeToJSON(json: any): PatchedChallenge {
     return PatchedChallengeToJSONTyped(json, false);
 }
 
-export function PatchedChallengeToJSONTyped(value?: Omit<PatchedChallenge, 'id'|'views'|'created_by'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedChallengeToJSONTyped(value?: Omit<PatchedChallenge, 'id'|'views'|'is_solved'|'is_favorited'|'created_by'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -216,6 +237,7 @@ export function PatchedChallengeToJSONTyped(value?: Omit<PatchedChallenge, 'id'|
         'example_language': value['exampleLanguage'],
         'example_input': value['exampleInput'],
         'example_output': value['exampleOutput'],
+        'categories': value['categories'],
         'course': value['course'],
     };
 }

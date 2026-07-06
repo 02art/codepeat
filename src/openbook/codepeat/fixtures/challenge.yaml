@@ -11,6 +11,7 @@
   pk: 00000000-0000-4000-8000-000000000001
   fields:
     name: "FizzBuzz"
+    categories: ["Math"]
     text_format: "MD"
     difficulty: easy
     visibility: public
@@ -38,6 +39,7 @@
   pk: 00000000-0000-4000-8000-000000000002
   fields:
     name: "Binary Search"
+    categories: ["Binary Search", "Array"]
     text_format: "MD"
     difficulty: easy
     visibility: public
@@ -65,6 +67,7 @@
   pk: 00000000-0000-4000-8000-000000000003
   fields:
     name: "Two Sum"
+    categories: ["Array", "Hashing"]
     text_format: "MD"
     difficulty: easy
     visibility: public
@@ -91,6 +94,7 @@
   pk: 00000000-0000-4000-8000-000000000004
   fields:
     name: "Palindrome Number"
+    categories: ["Math"]
     text_format: "MD"
     difficulty: easy
     visibility: public
@@ -117,6 +121,7 @@
   pk: 00000000-0000-4000-8000-000000000005
   fields:
     name: "Valid Parentheses"
+    categories: ["Stack", "String"]
     text_format: "MD"
     difficulty: easy
     visibility: public
@@ -143,6 +148,7 @@
   pk: 00000000-0000-4000-8000-000000000006
   fields:
     name: "Best Time to Buy and Sell Stock"
+    categories: ["Array", "Dynamic Programming"]
     text_format: "MD"
     difficulty: easy
     visibility: public
@@ -169,6 +175,7 @@
   pk: 00000000-0000-4000-8000-000000000007
   fields:
     name: "Valid Anagram"
+    categories: ["String", "Hashing"]
     text_format: "MD"
     difficulty: easy
     visibility: public
@@ -195,6 +202,7 @@
   pk: 00000000-0000-4000-8000-000000000008
   fields:
     name: "Add Two Numbers"
+    categories: ["Linked List", "Math"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -221,6 +229,7 @@
   pk: 00000000-0000-4000-8000-000000000009
   fields:
     name: "Longest Substring Without Repeating Characters"
+    categories: ["String", "Two Pointers"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -247,6 +256,7 @@
   pk: 00000000-0000-4000-8000-00000000000a
   fields:
     name: "Group Anagrams"
+    categories: ["String", "Hashing"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -273,6 +283,7 @@
   pk: 00000000-0000-4000-8000-00000000000b
   fields:
     name: "Product of Array Except Self"
+    categories: ["Array"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -299,6 +310,7 @@
   pk: 00000000-0000-4000-8000-00000000000c
   fields:
     name: "3Sum"
+    categories: ["Array", "Two Pointers"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -325,6 +337,7 @@
   pk: 00000000-0000-4000-8000-00000000000d
   fields:
     name: "Coin Change"
+    categories: ["Dynamic Programming"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -351,6 +364,7 @@
   pk: 00000000-0000-4000-8000-00000000000e
   fields:
     name: "Number of Islands"
+    categories: ["Graph"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -377,6 +391,7 @@
   pk: 00000000-0000-4000-8000-00000000000f
   fields:
     name: "Container With Most Water"
+    categories: ["Array", "Two Pointers"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -403,6 +418,7 @@
   pk: 00000000-0000-4000-8000-000000000010
   fields:
     name: "Merge Intervals"
+    categories: ["Sorting", "Array"]
     text_format: "MD"
     difficulty: medium
     visibility: public
@@ -429,6 +445,7 @@
   pk: 00000000-0000-4000-8000-000000000011
   fields:
     name: "Median of Two Sorted Arrays"
+    categories: ["Array", "Binary Search"]
     text_format: "MD"
     difficulty: hard
     visibility: public
@@ -455,6 +472,7 @@
   pk: 00000000-0000-4000-8000-000000000012
   fields:
     name: "Trapping Rain Water"
+    categories: ["Array", "Two Pointers"]
     text_format: "MD"
     difficulty: hard
     visibility: public
@@ -481,6 +499,7 @@
   pk: 00000000-0000-4000-8000-000000000013
   fields:
     name: "Merge k Sorted Lists"
+    categories: ["Linked List", "Sorting"]
     text_format: "MD"
     difficulty: hard
     visibility: public
@@ -507,6 +526,7 @@
   pk: 00000000-0000-4000-8000-000000000014
   fields:
     name: "Word Ladder"
+    categories: ["Graph", "String"]
     text_format: "MD"
     difficulty: hard
     visibility: public

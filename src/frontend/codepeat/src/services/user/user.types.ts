@@ -22,8 +22,6 @@ export interface User {
     progress: UserProgress;
     /** Profile picture URL, or null to fall back to the default avatar icon. */
     avatarUrl: string | null;
-    /** Whether this is a verified CodePeat account (shown with a badge). */
-    verified: boolean;
     /** Whether the user may create challenges (lecturers/admins). Drives the "add" button. */
     canCreateChallenges: boolean;
 }

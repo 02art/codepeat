@@ -49,6 +49,7 @@ models/Avatar.ts
 models/BlankEnum.ts
 models/Challenge.ts
 models/ChallengeCanCreate.ts
+models/ChallengeFavoriteResult.ts
 models/ChallengeInviteLink.ts
 models/ChallengeUnlock.ts
 models/ChallengeUnlockResult.ts

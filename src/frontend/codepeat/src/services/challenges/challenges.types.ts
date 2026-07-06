@@ -1,25 +1,24 @@
 export type Difficulty = "easy" | "medium" | "hard";
 
-export type ChallengeStatus = "locked" | "open";
-
 export interface Challenge {
     id: string;
     title: string;
     description: string;
     difficulty: Difficulty;
-    /** Global availability of the challenge (same for everyone). */
-    status: ChallengeStatus;
+    /** Whether the current user has bookmarked it (per-user). */
     favorited: boolean;
-    /** Whether the *current* user has solved it — per-user, set by the service. */
+    /** Whether the current user has solved it, i.e. has an accepted submission (per-user). */
     solved: boolean;
     createdBy: string;
+    /** Official CodePeat challenge (no individual creator on record). */
+    official: boolean;
+    /** Topic tags used by the overview quick filters. */
     categories: string[];
-    popular: boolean;
     isNew: boolean;
-    assigned: boolean;
     /** ISO date (YYYY-MM-DD); drives "newest first" sorting. */
     createdAt: string;
-    solvedCount: number;
+    /** View count; drives "most popular first" sorting. */
+    views: number;
 }
 
 /** Editable challenge data used by the challenge editor (raw, unsplit text fields). */

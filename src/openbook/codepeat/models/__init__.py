@@ -1,5 +1,6 @@
 from .challenge import Challenge
 from .challenge_access import ChallengeAccess
+from .challenge_favorite import ChallengeFavorite
 from .submission import Submission
 from .reflection import Reflection
 from .reflection_question import ReflectionQuestion
